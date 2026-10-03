@@ -1,0 +1,31 @@
+{
+	"id": "m5dial",
+	"name": "M5Dial",
+	"pluginVersion": "0.1",
+	"description": {
+		"fr_FR": "Télécommandes murales M5Stack M5Dial : supervision des boutons et envoi de leur configuration par MQTT",
+		"en_US": "M5Stack M5Dial wall remotes: button supervision and configuration over MQTT"
+	},
+	"licence": "AGPL",
+	"author": "Jérôme Raimbourg",
+	"require": "4.4",
+	"os": {
+		"min": 11
+	},
+	"category": "devicecommunication",
+	"hasDependency": false,
+	"hasOwnDeamon": false,
+	"maxDependancyInstallTime": 0,
+	"language": [
+		"fr_FR",
+		"en_US"
+	],
+	"compatibility": [
+		"smart",
+		"luna",
+		"atlas",
+		"rpi",
+		"docker",
+		"diy"
+	]
+}
