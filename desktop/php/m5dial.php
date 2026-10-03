@@ -73,6 +73,8 @@ $eqLogics = eqLogic::byType($plugin->getId());
 		<ul class="nav nav-tabs" role="tablist">
 			<li role="presentation"><a href="#" class="eqLogicAction" aria-controls="home" role="tab" data-toggle="tab" data-action="returnToThumbnailDisplay"><i class="fas fa-arrow-circle-left"></i></a></li>
 			<li role="presentation" class="active"><a href="#eqlogictab" aria-controls="home" role="tab" data-toggle="tab"><i class="fas fa-tachometer-alt"></i> {{Equipement}}</a></li>
+			<li role="presentation"><a href="#m5dialEcranstab" aria-controls="home" role="tab" data-toggle="tab"><i class="fas fa-th-large"></i> {{Écrans du bouton}}</a></li>
+			<li role="presentation"><a href="#m5dialJsontab" aria-controls="home" role="tab" data-toggle="tab"><i class="fas fa-code"></i> {{JSON}}</a></li>
 			<li role="presentation"><a href="#commandtab" aria-controls="home" role="tab" data-toggle="tab"><i class="fas fa-list"></i> {{Commandes}}</a></li>
 		</ul>
 		<div class="tab-content">
@@ -152,19 +154,6 @@ $eqLogics = eqLogic::byType($plugin->getId());
 						<!-- Partie droite de l'onglet "Équipement" -->
 						<!-- Affiche un champ de commentaire par défaut mais vous pouvez y mettre ce que vous voulez -->
 						<div class="col-lg-6">
-							<legend><i class="fas fa-code"></i> {{Configuration du bouton (JSON)}}</legend>
-							<div class="form-group">
-								<div class="col-sm-12">
-									<textarea class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="configJson" rows="18" style="font-family:monospace;font-size:12px;" placeholder='{"presence":{...},"lumieres":[...],"volets":[...]}'></textarea>
-									<span class="help-block">{{Mêmes sections que le config.json du bouton (presence, lumieres, volets, groupes, chauffage, capteurs, badges). La section device est ignorée.}}</span>
-								</div>
-							</div>
-							<div class="form-group">
-								<div class="col-sm-12">
-									<a class="btn btn-success" id="bt_m5dialEnvoyerConfig"><i class="fas fa-paper-plane"></i> {{Envoyer la configuration au bouton}}</a>
-									<a class="btn btn-warning" id="bt_m5dialConfigLocale"><i class="fas fa-undo"></i> {{Revenir à la configuration locale}}</a>
-								</div>
-							</div>
 							<legend><i class="fas fa-info"></i> {{Informations}}</legend>
 							<div class="form-group">
 								<label class="col-sm-4 control-label">{{Description}}</label>
@@ -176,6 +165,28 @@ $eqLogics = eqLogic::byType($plugin->getId());
 					</fieldset>
 				</form>
 			</div><!-- /.tabpanel #eqlogictab-->
+
+			<!-- Onglet editeur des ecrans du bouton (desktop/js/m5dial_editeur.js) -->
+			<div role="tabpanel" class="tab-pane" id="m5dialEcranstab">
+				<br>
+				<div class="alert alert-info">
+					{{Cochez les écrans à afficher sur ce bouton et choisissez les commandes Jeedom avec}} <i class="fas fa-list-alt"></i>.
+					{{Sauvegardez l'équipement, puis envoyez la configuration : le bouton redémarre dessus.}}
+				</div>
+				<div style="margin-bottom:10px;">
+					<a class="btn btn-success" id="bt_m5dialEnvoyerConfig"><i class="fas fa-paper-plane"></i> {{Envoyer la configuration au bouton}}</a>
+					<a class="btn btn-warning" id="bt_m5dialConfigLocale"><i class="fas fa-undo"></i> {{Revenir à la configuration locale}}</a>
+				</div>
+				<div class="alert alert-danger" id="div_m5dialErreurJson" style="display:none;"></div>
+				<div id="div_m5dialEditeur"></div>
+			</div>
+
+			<!-- Onglet JSON : configuration brute (toujours synchronisee avec l'editeur) -->
+			<div role="tabpanel" class="tab-pane" id="m5dialJsontab">
+				<br>
+				<textarea class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="configJson" rows="30" style="font-family:monospace;font-size:12px;"></textarea>
+				<span class="help-block">{{Configuration envoyée au bouton, générée par l'onglet Écrans du bouton. Vous pouvez aussi la coller ou la modifier ici (mêmes sections que le config.json du bouton ; la section device est ignorée).}}</span>
+			</div>
 
 			<!-- Onglet des commandes de l'équipement -->
 			<div role="tabpanel" class="tab-pane" id="commandtab">
@@ -204,6 +215,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 </div><!-- /.row row-overflow -->
 
 <!-- Inclusion du fichier javascript du plugin (dossier, nom_du_fichier, extension_du_fichier, id_du_plugin) -->
+<?php include_file('desktop', 'm5dial_editeur', 'js', 'm5dial'); ?>
 <?php include_file('desktop', 'm5dial', 'js', 'm5dial'); ?>
 <!-- Inclusion du fichier javascript du core - NE PAS MODIFIER NI SUPPRIMER -->
 <?php include_file('core', 'plugin.template', 'js'); ?>

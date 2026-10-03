@@ -120,3 +120,9 @@ $('#bt_m5dialEnvoyerConfig').off('click').on('click', function () {
 $('#bt_m5dialConfigLocale').off('click').on('click', function () {
   m5dialAction('configLocale', '{{Retour à la configuration locale demandé : le bouton va redémarrer}}')
 })
+
+/* Appelee par le core apres le chargement d'un equipement : construit
+   l'editeur des ecrans a partir du JSON enregistre. */
+function printEqLogic(_eqLogic) {
+  m5dialAfficher()
+}

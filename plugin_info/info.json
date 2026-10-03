@@ -1,7 +1,7 @@
 {
 	"id": "m5dial",
 	"name": "M5Dial",
-	"pluginVersion": "0.2",
+	"pluginVersion": "0.3",
 	"description": {
 		"fr_FR": "Télécommandes murales M5Stack M5Dial : supervision des boutons et envoi de leur configuration par MQTT",
 		"en_US": "M5Stack M5Dial wall remotes: button supervision and configuration over MQTT"
