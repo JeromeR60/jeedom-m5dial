@@ -144,17 +144,42 @@ class m5dial extends eqLogic {
 	// Publie la configuration JSON de l'equipement (message retenu). La
 	// section "device" est retiree : le bouton l'ignore de toute facon (il
 	// garde son nom et son broker locaux).
-	public function envoyerConfiguration() {
-		if ($this->getLogicalId() == '') {
-			throw new Exception(__('Renseignez le nom du bouton avant d\'envoyer la configuration', __FILE__));
+	// Jeedom transforme automatiquement un texte JSON en tableau a la
+	// sauvegarde : la configuration peut donc etre lue sous les deux formes.
+	// Retourne le tableau, ou null si vide ; exception si JSON invalide.
+	public static function decoderConfig($_valeur) {
+		if (is_array($_valeur)) {
+			return (count($_valeur) > 0) ? $_valeur : null;
 		}
-		$texte = trim($this->getConfiguration('configJson', ''));
+		$texte = trim((string) $_valeur);
 		if ($texte == '') {
-			throw new Exception(__('La configuration est vide', __FILE__));
+			return null;
 		}
 		$config = json_decode($texte, true);
 		if (!is_array($config)) {
 			throw new Exception(__('La configuration n\'est pas un JSON valide', __FILE__) . ' : ' . json_last_error_msg());
+		}
+		return $config;
+	}
+
+	// $_texte : contenu du champ de la page (envoye directement par le bouton
+	// "Envoyer", pour ne pas dependre d'une sauvegarde prealable). Il est
+	// aussi enregistre dans l'equipement.
+	public function envoyerConfiguration($_texte = null) {
+		if ($this->getLogicalId() == '') {
+			throw new Exception(__('Renseignez le nom du bouton avant d\'envoyer la configuration', __FILE__));
+		}
+		if ($_texte !== null) {
+			$config = self::decoderConfig($_texte);
+			if ($config !== null) {
+				$this->setConfiguration('configJson', json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
+				$this->save(true);
+			}
+		} else {
+			$config = self::decoderConfig($this->getConfiguration('configJson', ''));
+		}
+		if ($config === null) {
+			throw new Exception(__('La configuration est vide', __FILE__));
 		}
 		unset($config['device']);
 		$message = json_encode($config, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
@@ -187,10 +212,10 @@ class m5dial extends eqLogic {
 				throw new Exception(__('Un autre équipement utilise déjà ce nom de bouton', __FILE__) . ' : ' . $this->getLogicalId());
 			}
 		}
-		$texte = trim($this->getConfiguration('configJson', ''));
-		if ($texte != '' && !is_array(json_decode($texte, true))) {
-			throw new Exception(__('La configuration n\'est pas un JSON valide', __FILE__) . ' : ' . json_last_error_msg());
-		}
+		// Toujours stocker la configuration sous forme de texte lisible (et non
+		// du tableau produit par Jeedom), pour l'afficher telle quelle.
+		$config = self::decoderConfig($this->getConfiguration('configJson', ''));
+		$this->setConfiguration('configJson', ($config === null) ? '' : json_encode($config, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));
 	}
 
 	// Cree les commandes manquantes (aussi appelee apres une mise a jour du plugin).

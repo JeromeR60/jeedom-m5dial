@@ -156,7 +156,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 							<div class="form-group">
 								<div class="col-sm-12">
 									<textarea class="eqLogicAttr form-control" data-l1key="configuration" data-l2key="configJson" rows="18" style="font-family:monospace;font-size:12px;" placeholder='{"presence":{...},"lumieres":[...],"volets":[...]}'></textarea>
-									<span class="help-block">{{Mêmes sections que le config.json du bouton (presence, lumieres, volets, groupes, chauffage, capteurs, badges). La section device est ignorée. Sauvegardez avant d'envoyer.}}</span>
+									<span class="help-block">{{Mêmes sections que le config.json du bouton (presence, lumieres, volets, groupes, chauffage, capteurs, badges). La section device est ignorée.}}</span>
 								</div>
 							</div>
 							<div class="form-group">

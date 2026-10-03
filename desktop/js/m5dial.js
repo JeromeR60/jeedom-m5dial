@@ -87,8 +87,8 @@ function addCmdToTable(_cmd) {
 }
 
 /* Boutons "Envoyer la configuration" / "Revenir a la configuration locale".
-   La configuration envoyee est celle enregistree : sauvegarder avant. */
-function m5dialAction(_action, _messageOk) {
+   La configuration envoyee est celle du champ (elle est aussi enregistree). */
+function m5dialAction(_action, _messageOk, _config) {
   var id = $('.eqLogicAttr[data-l1key=id]').value()
   if (id == '') {
     $('#div_alert').showAlert({ message: '{{Sauvegardez d\'abord l\'équipement}}', level: 'warning' })
@@ -97,7 +97,7 @@ function m5dialAction(_action, _messageOk) {
   $.ajax({
     type: 'POST',
     url: 'plugins/m5dial/core/ajax/m5dial.ajax.php',
-    data: { action: _action, id: id },
+    data: { action: _action, id: id, config: _config },
     dataType: 'json',
     error: function (request, status, error) {
       handleAjaxError(request, status, error)
@@ -113,7 +113,8 @@ function m5dialAction(_action, _messageOk) {
 }
 
 $('#bt_m5dialEnvoyerConfig').off('click').on('click', function () {
-  m5dialAction('envoyerConfig', '{{Configuration envoyée : le bouton va redémarrer dessus}}')
+  m5dialAction('envoyerConfig', '{{Configuration envoyée : le bouton va redémarrer dessus}}',
+    $('.eqLogicAttr[data-l1key=configuration][data-l2key=configJson]').value())
 })
 
 $('#bt_m5dialConfigLocale').off('click').on('click', function () {

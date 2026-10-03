@@ -19,7 +19,7 @@ try {
 			throw new Exception(__('Equipement introuvable', __FILE__) . ' : ' . init('id'));
 		}
 		if (init('action') == 'envoyerConfig') {
-			$eqLogic->envoyerConfiguration();
+			$eqLogic->envoyerConfiguration(init('config', null));
 		} else {
 			$eqLogic->revenirConfigurationLocale();
 		}
