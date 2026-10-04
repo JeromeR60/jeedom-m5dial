@@ -1,5 +1,9 @@
 # Changelog plugin M5Dial
 
+## 0.6
+
+- Correction : le firmware est servi par une page du plugin (le dossier data renvoyait une erreur 403).
+
 ## 0.5
 
 - Mise à jour du firmware des boutons depuis Jeedom : dépôt du firmware.bin sur la page du plugin, bouton « Mettre à jour le firmware » et commande action du même nom, suivi dans « État de la mise à jour ». Nécessite le firmware 2.1 sur le bouton.

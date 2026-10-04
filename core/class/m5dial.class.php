@@ -274,7 +274,9 @@ class m5dial extends eqLogic {
 		if (strpos($base, 'http://') !== 0) {
 			throw new Exception(__('L\'adresse interne de Jeedom doit être en http:// (Réglages > Système > Configuration > Réseaux)', __FILE__) . ' : ' . $base);
 		}
-		$url = rtrim($base, '/') . '/plugins/m5dial/data/firmware.bin';
+		// Le dossier data/ est interdit par Apache (403) : le fichier est servi
+		// par core/php/firmware.php, protege par la cle API du plugin.
+		$url = rtrim($base, '/') . '/plugins/m5dial/core/php/firmware.php?apikey=' . jeedom::getApiKey(__CLASS__);
 		$message = json_encode(array('url' => $url, 'version' => $info['version']), JSON_UNESCAPED_SLASHES);
 		mqtt2::publish(self::TOPIC_RACINE . '/' . $this->getLogicalId() . '/ota', $message, array('retain' => false, 'qos' => 1));
 		$this->checkAndUpdateCmd('maj_etat', __('demandée', __FILE__) . ' (' . $info['version'] . ')');
