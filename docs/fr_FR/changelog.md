@@ -1,5 +1,9 @@
 # Changelog plugin M5Dial
 
+## 0.9.3
+
+- Documentation illustrée (captures d'écran Jeedom, photos du bouton, portail).
+
 ## 0.9.2
 
 - Boutons Documentation et Changelog de Jeedom : liens vers les pages GitHub du plugin.

@@ -11,6 +11,8 @@ Depuis Jeedom, vous pouvez :
 
 Toute la communication passe par **MQTT**.
 
+<img src="../images/bouton-accueil.jpg" alt="Bouton M5Dial" width="300">
+
 ---
 
 ## 1. Prérequis
@@ -37,6 +39,8 @@ Toute la communication passe par **MQTT**.
 - **Topic racine des boutons** : `m5dial`. Les boutons publient sur `m5dial/<nom>/status` et `m5dial/<nom>/info` et reçoivent leur configuration sur `m5dial/<nom>/config`.
 - Le plugin s'abonne automatiquement à ce topic auprès de MQTT Manager.
 
+![Configuration du plugin](../images/configuration.png)
+
 ### Section « Identifiants transmis aux boutons lors de l'appairage »
 
 - **Utilisateur MQTT des boutons** : choisissez un utilisateur de MQTT Manager. Son mot de passe est transmis automatiquement au bouton lors de l'appairage : vous n'avez jamais à le saisir.
@@ -61,6 +65,8 @@ Au premier démarrage (aucun Wi-Fi enregistré), le bouton ouvre son **portail d
 3. Ouvrez **http://192.168.4.1** dans le navigateur.
 4. Choisissez votre Wi-Fi dans la liste, saisissez son mot de passe et l'**adresse de Jeedom** (IP du broker MQTT), puis validez.
 
+<img src="../images/bouton-portail.jpg" alt="Portail sur le bouton" width="300"> <img src="../images/portail.png" alt="Page du portail" width="250">
+
 Le bouton redémarre et se connecte à votre réseau.
 
 Le portail se rouvre aussi :
@@ -68,7 +74,7 @@ Le portail se rouvre aussi :
 - si le Wi-Fi enregistré reste injoignable pendant 90 secondes ;
 - si vous **maintenez le bouton appuyé au démarrage**, pour changer de Wi-Fi ou forcer un réappairage (section *Avancé*, case *Réappairer*).
 
-> En cas d'échec de connexion depuis un iPhone, « oubliez » le réseau `M5Dial-XXXX` dans les réglages Wi-Fi puis réessayez, ou utilisez un ordinateur.
+> Sur iPhone, la page s'ouvre automatiquement dans la fenêtre « Wi-Fi captif ». En cas d'échec, « oubliez » le réseau `M5Dial-XXXX` dans les réglages Wi-Fi puis réessayez.
 
 ### 3.3 Appairage avec Jeedom
 
@@ -78,6 +84,10 @@ Si le bouton ne connaît pas encore ses identifiants MQTT, il passe en **appaira
 2. Dans Jeedom, ouvrez la page du plugin M5Dial : la demande apparaît dans **Nouveaux boutons en attente d'appairage** (nom, adresse MAC, adresse IP, firmware, code).
 3. **Vérifiez que le code est identique** à celui affiché sur le bouton, puis cliquez sur **Accepter** (ou **Refuser**).
 4. Le bouton reçoit l'utilisateur et le mot de passe MQTT ainsi que le mot de passe OTA, les enregistre dans sa mémoire et redémarre.
+
+<img src="../images/bouton-code.jpg" alt="Code d'appairage" width="300">
+
+![Demande d'appairage dans Jeedom](../images/appairage.png)
 
 Quelques secondes plus tard, l'équipement est **créé automatiquement** dans Jeedom.
 
@@ -91,12 +101,16 @@ Chaque bouton apparaît dans **Mes boutons M5Dial** dès qu'il se connecte au br
 - la **version du firmware** ;
 - la **source de la configuration** (envoyée par Jeedom ou locale au bouton).
 
+![Vignette d'un bouton](../images/vignettes.png)
+
 ### Onglet « Equipement »
 
 - Paramètres Jeedom habituels : nom, objet parent, catégorie, activer, visible.
 - **Nom du bouton** : nom MQTT du bouton (ex. `m5dial-salon`), rempli automatiquement.
 - **Identifiant MQTT** : nom suivi des 4 derniers caractères de l'adresse MAC (unique par bouton).
 - **Mettre à jour le firmware** : voir §6.
+
+![Onglet Equipement](../images/equipement.png)
 
 ### Commandes
 
@@ -117,6 +131,8 @@ Chaque bouton apparaît dans **Mes boutons M5Dial** dès qu'il se connecte au br
 
 Les informations sont rafraîchies toutes les 5 minutes et à chaque reconnexion du bouton.
 
+![Onglet Commandes](../images/commandes.png)
+
 ---
 
 ## 5. Configurer les écrans d'un bouton
@@ -124,6 +140,8 @@ Les informations sont rafraîchies toutes les 5 minutes et à chaque reconnexion
 ### Onglet « Écrans du bouton »
 
 Cochez les écrans à afficher sur le bouton, puis choisissez les commandes Jeedom avec le sélecteur de commandes.
+
+![Onglet Écrans du bouton](../images/ecrans.png)
 
 | Écran | Ce qu'on configure |
 | --- | --- |
@@ -160,6 +178,8 @@ Sur la page du plugin, section **Firmware des boutons** :
 
 - **Récupérer la dernière version sur GitHub** (recommandé) : télécharge le `firmware.bin` de la dernière release publiée. Ces firmwares sont compilés **sans aucun mot de passe** ; chaque bouton garde ses propres réglages.
 - ou **Déposer un firmware.bin** : envoie un fichier que vous avez compilé avec PlatformIO.
+
+![Firmware des boutons](../images/firmware.png)
 
 La ligne **Firmware disponible pour les mises à jour** affiche la version, la taille et la date du fichier présent dans Jeedom.
 
