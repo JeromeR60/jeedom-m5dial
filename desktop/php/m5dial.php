@@ -46,6 +46,34 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				echo '<img src="' . $eqLogic->getImage() . '"/>';
 				echo '<br>';
 				echo '<span class="name">' . $eqLogic->getHumanName(true, true) . '</span>';
+				// Etat du bouton (commandes info En ligne / Version firmware / Source de la configuration)
+				$enLigne = null;
+				$version = '';
+				$source = '';
+				$cmd = $eqLogic->getCmd('info', 'online');
+				if (is_object($cmd)) {
+					$enLigne = $cmd->execCmd();
+				}
+				$cmd = $eqLogic->getCmd('info', 'version');
+				if (is_object($cmd)) {
+					$version = $cmd->execCmd();
+				}
+				$cmd = $eqLogic->getCmd('info', 'config_source');
+				if (is_object($cmd)) {
+					$source = $cmd->execCmd();
+				}
+				echo '<span style="display:block;font-size:0.85em;margin-top:2px;">';
+				if ($enLigne === null || $enLigne === '') {
+					echo '<i class="fas fa-circle" style="color:#999;"></i> {{Jamais vu}}';
+				} elseif ($enLigne == 1) {
+					echo '<i class="fas fa-circle" style="color:#5cb85c;"></i> {{En ligne}}';
+				} else {
+					echo '<i class="fas fa-circle" style="color:#d9534f;"></i> {{Hors ligne}}';
+				}
+				echo '</span>';
+				if ($version != '') {
+					echo '<span style="display:block;font-size:0.8em;opacity:0.8;">v' . htmlspecialchars($version) . (($source == 'mqtt') ? ' · {{config Jeedom}}' : (($source == 'locale') ? ' · {{config locale}}' : '')) . '</span>';
+				}
 				echo '<span class="hiddenAsCard displayTableRight hidden">';
 				echo ($eqLogic->getIsVisible() == 1) ? '<i class="fas fa-eye" title="{{Equipement visible}}"></i>' : '<i class="fas fa-eye-slash" title="{{Equipement non visible}}"></i>';
 				echo '</span>';

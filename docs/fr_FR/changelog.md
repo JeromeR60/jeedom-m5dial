@@ -1,5 +1,9 @@
 # Changelog plugin M5Dial
 
+## 0.4
+
+- État affiché sur la vignette de chaque bouton : En ligne / Hors ligne, version du firmware et source de la configuration.
+
 ## 0.3
 
 - Nouvel onglet « Écrans du bouton » : éditeur par écran (Présence, Lumières, Volets, Actions groupées, Chauffage, Capteurs, Badges) avec le sélecteur de commandes Jeedom. Le JSON est généré automatiquement (onglet JSON).
