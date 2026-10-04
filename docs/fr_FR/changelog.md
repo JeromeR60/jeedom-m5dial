@@ -1,5 +1,9 @@
 # Changelog plugin M5Dial
 
+## 0.7
+
+- Appairage des nouveaux boutons : le bouton affiche un code, la demande apparaît sur la page du plugin (Accepter / Refuser), puis le plugin lui transmet broker, utilisateur MQTT (repris de MQTT Manager) et mot de passe de mise à jour (généré par le plugin). Nécessite le firmware 2.2-c.
+
 ## 0.6
 
 - Correction : le firmware est servi par une page du plugin (le dossier data renvoyait une erreur 403).

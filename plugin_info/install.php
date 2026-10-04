@@ -20,12 +20,14 @@ require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 // Apres l'installation : abonnement aux topics m5dial/# via MQTT Manager.
 function m5dial_install() {
 	m5dial::enregistrerTopic();
+	m5dial::motDePasseOta();
 }
 
 // Apres une mise a jour : on reenregistre le topic et on complete les
 // commandes des equipements existants (nouvelles commandes eventuelles).
 function m5dial_update() {
 	m5dial::enregistrerTopic();
+	m5dial::motDePasseOta();
 	foreach (eqLogic::byType('m5dial') as $eqLogic) {
 		$eqLogic->save();
 	}

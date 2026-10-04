@@ -184,3 +184,62 @@ $('#bt_m5dialMajFirmware').off('click').on('click', function () {
 
 // Page d'accueil du plugin : affiche le firmware disponible.
 m5dialInfoFirmware()
+
+/* ------------------------------------------------------------------ */
+/* Appairage des nouveaux boutons (page d'accueil du plugin)           */
+/* ------------------------------------------------------------------ */
+function m5dialAppairages() {
+  if ($('#tb_m5dialAppairages').length == 0) return
+  $.ajax({
+    type: 'POST',
+    url: 'plugins/m5dial/core/ajax/m5dial.ajax.php',
+    data: { action: 'appairages' },
+    dataType: 'json',
+    global: false,
+    success: function (data) {
+      if (data.state != 'ok') return
+      var html = ''
+      data.result.forEach(function (d) {
+        var e = function (t) { return $('<span>').text(t || '').html() }
+        html += '<tr><td>' + e(d.nom) + '</td><td>' + e(d.mac) + '</td><td>' + e(d.ip) + '</td><td>' + e(d.version) + '</td>'
+        html += '<td><span class="label label-warning" style="font-size:1.3em;letter-spacing:3px;">' + e(d.code) + '</span></td><td>'
+        if (d.etat == 'attente') {
+          html += '<a class="btn btn-success btn-sm m5dialReponse" data-mac="' + e(d.mac) + '" data-accepte="1"><i class="fas fa-check"></i> {{Accepter}}</a> '
+          html += '<a class="btn btn-danger btn-sm m5dialReponse" data-mac="' + e(d.mac) + '" data-accepte="0"><i class="fas fa-times"></i> {{Refuser}}</a>'
+        } else {
+          html += (d.etat == 'accepte') ? '{{Accepté, transmission en cours...}}' : '{{Refusé}}'
+        }
+        html += '</td></tr>'
+      })
+      $('#tb_m5dialAppairages').html(html)
+      $('#div_m5dialAppairages').toggle(data.result.length > 0)
+    }
+  })
+}
+
+$('#tb_m5dialAppairages').off('click', '.m5dialReponse').on('click', '.m5dialReponse', function () {
+  $.ajax({
+    type: 'POST',
+    url: 'plugins/m5dial/core/ajax/m5dial.ajax.php',
+    data: { action: 'reponseAppairage', mac: $(this).attr('data-mac'), accepte: $(this).attr('data-accepte') },
+    dataType: 'json',
+    error: function (request, status, error) { handleAjaxError(request, status, error) },
+    success: function (data) {
+      if (data.state != 'ok') {
+        $('#div_alert').showAlert({ message: data.result, level: 'danger' })
+      }
+      m5dialAppairages()
+    }
+  })
+})
+
+// Rafraichissement toutes les 4 s tant que la page du plugin est ouverte.
+m5dialAppairages()
+if (window.m5dialMinuteurAppairage) clearInterval(window.m5dialMinuteurAppairage)
+window.m5dialMinuteurAppairage = setInterval(function () {
+  if ($('#tb_m5dialAppairages').length == 0) {
+    clearInterval(window.m5dialMinuteurAppairage)
+    return
+  }
+  m5dialAppairages()
+}, 4000)

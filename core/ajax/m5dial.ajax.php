@@ -47,6 +47,15 @@ try {
 		ajax::success();
 	}
 
+	// Appairage des nouveaux boutons (page d'accueil du plugin).
+	if (init('action') == 'appairages') {
+		ajax::success(array_values(m5dial::lireAppairages()));
+	}
+	if (init('action') == 'reponseAppairage') {
+		m5dial::reponseAppairage(init('mac'), init('accepte') == 1);
+		ajax::success();
+	}
+
 	// Noms complets ([Objet][Equipement][Commande]) des commandes de l'editeur.
 	if (init('action') == 'nomsCommandes') {
 		$ids = json_decode(init('ids'), true);

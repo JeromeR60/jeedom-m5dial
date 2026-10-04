@@ -208,6 +208,136 @@ class m5dial extends eqLogic {
 	}
 
 	/* ---------------------------------------------------------------- */
+	/* Appairage des nouveaux boutons (core/php/appairage.php)           */
+	/* ---------------------------------------------------------------- */
+
+	const APPAIRAGE_DUREE = 900; // une demande expire au bout de 15 min sans nouvelle
+
+	// Demandes en cours, indexees par adresse MAC (sans les demandes expirees).
+	public static function lireAppairages() {
+		$liste = config::byKey('appairages', __CLASS__, array());
+		if (!is_array($liste)) {
+			$liste = array();
+		}
+		foreach ($liste as $mac => $demande) {
+			if (time() - intval($demande['date']) > self::APPAIRAGE_DUREE) {
+				unset($liste[$mac]);
+			}
+		}
+		return $liste;
+	}
+
+	private static function ecrireAppairages($_liste) {
+		config::save('appairages', $_liste, __CLASS__);
+	}
+
+	// Appelee par le bouton (page publique). Retourne la reponse a lui envoyer.
+	public static function demandeAppairage($_mac, $_code, $_nom, $_version, $_ip) {
+		$liste = self::lireAppairages();
+		if (isset($liste[$_mac]) && $liste[$_mac]['code'] == $_code) {
+			if ($liste[$_mac]['etat'] == 'accepte') {
+				unset($liste[$_mac]);
+				self::ecrireAppairages($liste);
+				log::add(__CLASS__, 'info', __('Identifiants transmis au bouton', __FILE__) . ' ' . $_nom . ' (' . $_mac . ')');
+				return array_merge(array('etat' => 'accepte'), self::identifiantsBoutons());
+			}
+			if ($liste[$_mac]['etat'] == 'refuse') {
+				unset($liste[$_mac]);
+				self::ecrireAppairages($liste);
+				return array('etat' => 'refuse');
+			}
+			$liste[$_mac]['date'] = time();
+			$liste[$_mac]['ip'] = $_ip;
+			self::ecrireAppairages($liste);
+			return array('etat' => 'attente');
+		}
+		if (!isset($liste[$_mac]) && count($liste) >= 10) {
+			return array('etat' => 'erreur', 'message' => 'trop de demandes en cours');
+		}
+		$liste[$_mac] = array(
+			'mac' => $_mac,
+			'code' => $_code,
+			'nom' => $_nom,
+			'version' => $_version,
+			'ip' => $_ip,
+			'date' => time(),
+			'debut' => date('H:i:s'),
+			'etat' => 'attente',
+		);
+		self::ecrireAppairages($liste);
+		log::add(__CLASS__, 'info', __('Demande d\'appairage', __FILE__) . ' : ' . $_nom . ' (' . $_mac . ', ' . $_ip . '), code ' . $_code);
+		return array('etat' => 'attente');
+	}
+
+	public static function reponseAppairage($_mac, $_accepte) {
+		$liste = self::lireAppairages();
+		if (!isset($liste[$_mac])) {
+			throw new Exception(__('Demande introuvable ou expirée', __FILE__));
+		}
+		if ($_accepte) {
+			$infos = self::identifiantsBoutons();
+			if ($infos['utilisateur'] == '') {
+				throw new Exception(__('Choisissez l\'utilisateur MQTT des boutons dans la configuration du plugin', __FILE__));
+			}
+		}
+		$liste[$_mac]['etat'] = $_accepte ? 'accepte' : 'refuse';
+		self::ecrireAppairages($liste);
+		log::add(__CLASS__, 'info', __('Appairage', __FILE__) . ' ' . $liste[$_mac]['nom'] . ' : ' . ($_accepte ? __('accepté', __FILE__) : __('refusé', __FILE__)));
+	}
+
+	// Utilisateurs MQTT definis dans MQTT Manager (lignes "utilisateur:motdepasse").
+	public static function utilisateursMqtt() {
+		$utilisateurs = array();
+		if (!class_exists('mqtt2')) {
+			return $utilisateurs;
+		}
+		foreach (explode("\n", config::byKey('mqtt::password', 'mqtt2', '')) as $ligne) {
+			$parts = explode(':', trim($ligne), 2);
+			if (count($parts) == 2 && $parts[0] != '') {
+				$utilisateurs[$parts[0]] = $parts[1];
+			}
+		}
+		return $utilisateurs;
+	}
+
+	// Mot de passe des mises a jour (ArduinoOTA), genere une fois par le plugin.
+	public static function motDePasseOta() {
+		$mdp = config::byKey('ota_mdp', __CLASS__, '');
+		if ($mdp == '') {
+			$mdp = config::genKey(16);
+			config::save('ota_mdp', $mdp, __CLASS__);
+		}
+		return $mdp;
+	}
+
+	// Identifiants transmis aux boutons lors de l'appairage.
+	public static function identifiantsBoutons() {
+		$hote = network::getNetworkAccess('internal', 'ip');
+		$port = 1883;
+		if (class_exists('mqtt2')) {
+			$infos = mqtt2::getFormatedInfos();
+			if (isset($infos['ip']) && $infos['ip'] != '' && strpos($infos['ip'], '127.') !== 0) {
+				$hote = $infos['ip'];
+			}
+			if (isset($infos['port']) && intval($infos['port']) > 0) {
+				$port = intval($infos['port']);
+			}
+		}
+		$utilisateurs = self::utilisateursMqtt();
+		$utilisateur = config::byKey('mqtt_utilisateur', __CLASS__, '');
+		if ($utilisateur == '' || !isset($utilisateurs[$utilisateur])) {
+			$utilisateur = isset($utilisateurs['m5dial']) ? 'm5dial' : (count($utilisateurs) > 0 ? array_keys($utilisateurs)[0] : '');
+		}
+		return array(
+			'hote' => $hote,
+			'port' => $port,
+			'utilisateur' => $utilisateur,
+			'mdp' => ($utilisateur != '') ? $utilisateurs[$utilisateur] : '',
+			'ota' => self::motDePasseOta(),
+		);
+	}
+
+	/* ---------------------------------------------------------------- */
 	/* Mise a jour du firmware depuis Jeedom                             */
 	/* ---------------------------------------------------------------- */
 	// Le firmware.bin (genere par PlatformIO : .pio/build/m5dial/firmware.bin)

@@ -17,6 +17,33 @@ if (!isConnect()) {
 				<span class="label label-info">m5dial</span>
 			</div>
 		</div>
+		<legend><i class="fas fa-key"></i> {{Identifiants transmis aux boutons lors de l'appairage}}</legend>
+		<div class="form-group">
+			<label class="col-md-4 control-label">{{Utilisateur MQTT des boutons}}
+				<sup><i class="fas fa-question-circle tooltips" title="{{Utilisateur défini dans la configuration de MQTT Manager (champ Authentification). Son mot de passe est transmis automatiquement.}}"></i></sup>
+			</label>
+			<div class="col-md-4">
+				<select class="configKey form-control" data-l1key="mqtt_utilisateur">
+					<?php
+					$utilisateurs = m5dial::utilisateursMqtt();
+					if (count($utilisateurs) == 0) {
+						echo '<option value="">{{Aucun utilisateur dans MQTT Manager}}</option>';
+					}
+					foreach ($utilisateurs as $utilisateur => $mdp) {
+						echo '<option value="' . htmlspecialchars($utilisateur) . '"' . ($utilisateur == 'm5dial' ? ' selected' : '') . '>' . htmlspecialchars($utilisateur) . '</option>';
+					}
+					?>
+				</select>
+			</div>
+		</div>
+		<div class="form-group">
+			<label class="col-md-4 control-label">{{Mot de passe des mises à jour (OTA)}}
+				<sup><i class="fas fa-question-circle tooltips" title="{{Généré par le plugin et transmis aux boutons. À recopier dans secrets_ota.ini seulement pour une mise à jour depuis PlatformIO.}}"></i></sup>
+			</label>
+			<div class="col-md-4">
+				<input class="form-control" readonly value="<?php echo htmlspecialchars(m5dial::motDePasseOta()); ?>">
+			</div>
+		</div>
 		<div class="form-group">
 			<label class="col-md-4 control-label">{{Prérequis}}</label>
 			<div class="col-md-8">

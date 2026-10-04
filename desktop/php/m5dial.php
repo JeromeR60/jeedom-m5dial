@@ -25,6 +25,14 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				<span>{{Configuration}}</span>
 			</div>
 		</div>
+		<div id="div_m5dialAppairages" style="display:none;">
+			<legend><i class="fas fa-link"></i> {{Nouveaux boutons en attente d'appairage}}</legend>
+			<div class="alert alert-warning">{{Vérifiez que le code affiché sur l'écran du bouton est le même avant d'accepter : le bouton recevra les identifiants MQTT.}}</div>
+			<table class="table table-condensed" style="max-width:900px;">
+				<thead><tr><th>{{Bouton}}</th><th>{{Adresse MAC}}</th><th>{{Adresse IP}}</th><th>{{Firmware}}</th><th>{{Code}}</th><th></th></tr></thead>
+				<tbody id="tb_m5dialAppairages"></tbody>
+			</table>
+		</div>
 		<legend><i class="fas fa-microchip"></i> {{Firmware des boutons}}</legend>
 		<div class="form-horizontal" style="margin-left:10px;">
 			<div class="form-group">
