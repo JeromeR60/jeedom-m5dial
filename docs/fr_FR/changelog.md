@@ -1,5 +1,9 @@
 # Changelog plugin M5Dial
 
+## 0.9.2
+
+- Boutons Documentation et Changelog de Jeedom : liens vers les pages GitHub du plugin.
+
 ## 0.9.1
 
 - Documentation complète : installation, portail Wi-Fi, appairage, écrans, mises à jour du firmware, topics MQTT, dépannage.

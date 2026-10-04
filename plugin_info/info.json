@@ -1,7 +1,9 @@
 {
 	"id": "m5dial",
 	"name": "M5Dial",
-	"pluginVersion": "0.9.1",
+	"pluginVersion": "0.9.2",
+	"documentation": "https://github.com/JeromeR60/jeedom-m5dial/blob/main/docs/fr_FR/index.md",
+	"changelog": "https://github.com/JeromeR60/jeedom-m5dial/blob/main/docs/fr_FR/changelog.md",
 	"description": {
 		"fr_FR": "Télécommandes murales M5Stack M5Dial : supervision des boutons et envoi de leur configuration par MQTT",
 		"en_US": "M5Stack M5Dial wall remotes: button supervision and configuration over MQTT"
