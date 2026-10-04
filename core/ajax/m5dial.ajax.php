@@ -56,6 +56,13 @@ try {
 		ajax::success();
 	}
 
+	// Nouveau mot de passe des mises a jour (page de configuration du plugin).
+	if (init('action') == 'nouveauMdpOta') {
+		config::save('ota_mdp', '', 'm5dial');
+		log::add('m5dial', 'info', __('Nouveau mot de passe OTA généré', __FILE__));
+		ajax::success(m5dial::motDePasseOta());
+	}
+
 	// Noms complets ([Objet][Equipement][Commande]) des commandes de l'editeur.
 	if (init('action') == 'nomsCommandes') {
 		$ids = json_decode(init('ids'), true);

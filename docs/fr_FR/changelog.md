@@ -1,5 +1,10 @@
 # Changelog plugin M5Dial
 
+## 0.8
+
+- Configuration : présentation corrigée, mot de passe OTA masqué (bouton afficher) et bouton « Générer un nouveau mot de passe ».
+- Chemin du firmware.bin corrigé dans l'aide.
+
 ## 0.7
 
 - Appairage des nouveaux boutons : le bouton affiche un code, la demande apparaît sur la page du plugin (Accepter / Refuser), puis le plugin lui transmet broker, utilisateur MQTT (repris de MQTT Manager) et mot de passe de mise à jour (généré par le plugin). Nécessite le firmware 2.2-c.

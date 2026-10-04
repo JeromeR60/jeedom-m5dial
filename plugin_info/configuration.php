@@ -9,6 +9,7 @@ if (!isConnect()) {
 ?>
 <form class="form-horizontal">
 	<fieldset>
+		<legend><i class="fas fa-info-circle"></i> {{Général}}</legend>
 		<div class="form-group">
 			<label class="col-md-4 control-label">{{Topic racine des boutons}}
 				<sup><i class="fas fa-question-circle tooltips" title="{{Les boutons publient sur m5dial/<nom>/status et m5dial/<nom>/info, et reçoivent leur configuration sur m5dial/<nom>/config}}"></i></sup>
@@ -17,6 +18,13 @@ if (!isConnect()) {
 				<span class="label label-info">m5dial</span>
 			</div>
 		</div>
+		<div class="form-group">
+			<label class="col-md-4 control-label">{{Prérequis}}</label>
+			<div class="col-md-8">
+				{{Le plugin MQTT Manager (mqtt2) doit être installé et démarré : il fournit la connexion au broker.}}
+			</div>
+		</div>
+
 		<legend><i class="fas fa-key"></i> {{Identifiants transmis aux boutons lors de l'appairage}}</legend>
 		<div class="form-group">
 			<label class="col-md-4 control-label">{{Utilisateur MQTT des boutons}}
@@ -38,17 +46,40 @@ if (!isConnect()) {
 		</div>
 		<div class="form-group">
 			<label class="col-md-4 control-label">{{Mot de passe des mises à jour (OTA)}}
-				<sup><i class="fas fa-question-circle tooltips" title="{{Généré par le plugin et transmis aux boutons. À recopier dans secrets_ota.ini seulement pour une mise à jour depuis PlatformIO.}}"></i></sup>
+				<sup><i class="fas fa-question-circle tooltips" title="{{Généré par le plugin et transmis aux boutons lors de l'appairage. À recopier dans secrets_ota.ini seulement pour une mise à jour depuis PlatformIO.}}"></i></sup>
 			</label>
 			<div class="col-md-4">
-				<input class="form-control" readonly value="<?php echo htmlspecialchars(m5dial::motDePasseOta()); ?>">
-			</div>
-		</div>
-		<div class="form-group">
-			<label class="col-md-4 control-label">{{Prérequis}}</label>
-			<div class="col-md-8">
-				{{Le plugin MQTT Manager (mqtt2) doit être installé et démarré : il fournit la connexion au broker.}}
+				<div class="input-group">
+					<input class="form-control roundedLeft" type="password" readonly id="in_m5dialOtaMdp" value="<?php echo htmlspecialchars(m5dial::motDePasseOta()); ?>">
+					<span class="input-group-btn">
+						<a class="btn btn-default" id="bt_m5dialVoirOta" title="{{Afficher / masquer}}"><i class="fas fa-eye"></i></a>
+						<a class="btn btn-warning roundedRight" id="bt_m5dialNouveauOta" title="{{Générer un nouveau mot de passe}}"><i class="fas fa-sync"></i></a>
+					</span>
+				</div>
+				<span class="help-block">{{Un nouveau mot de passe ne s'applique qu'aux boutons appairés ensuite : les boutons existants gardent l'ancien jusqu'à un réappairage.}}</span>
 			</div>
 		</div>
 	</fieldset>
 </form>
+<script>
+	document.getElementById('bt_m5dialVoirOta').addEventListener('click', function () {
+		var champ = document.getElementById('in_m5dialOtaMdp')
+		champ.type = (champ.type == 'password') ? 'text' : 'password'
+	})
+	document.getElementById('bt_m5dialNouveauOta').addEventListener('click', function () {
+		if (!confirm('{{Générer un nouveau mot de passe OTA ? Les boutons déjà appairés garderont l\'ancien jusqu\'à leur réappairage.}}')) return
+		$.ajax({
+			type: 'POST',
+			url: 'plugins/m5dial/core/ajax/m5dial.ajax.php',
+			data: { action: 'nouveauMdpOta' },
+			dataType: 'json',
+			success: function (data) {
+				if (data.state != 'ok') {
+					$('#div_alert').showAlert({ message: data.result, level: 'danger' })
+					return
+				}
+				document.getElementById('in_m5dialOtaMdp').value = data.result
+			}
+		})
+	})
+</script>
