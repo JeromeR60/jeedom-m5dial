@@ -70,10 +70,13 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				} else {
 					echo '<i class="fas fa-circle" style="color:#d9534f;"></i> {{Hors ligne}}';
 				}
-				echo '</span>';
+				// Version sur la meme ligne (la vignette a une hauteur fixe) ; la
+				// source de la configuration est dans l'infobulle.
 				if ($version != '') {
-					echo '<span style="display:block;font-size:0.8em;opacity:0.8;">v' . htmlspecialchars($version) . (($source == 'mqtt') ? ' · {{config Jeedom}}' : (($source == 'locale') ? ' · {{config locale}}' : '')) . '</span>';
+					$titre = ($source == 'mqtt') ? '{{Configuration envoyée par Jeedom}}' : (($source == 'locale') ? '{{Configuration locale du bouton}}' : '');
+					echo ' <span style="opacity:0.8;" title="' . $titre . '">· v' . htmlspecialchars($version) . '</span>';
 				}
+				echo '</span>';
 				echo '<span class="hiddenAsCard displayTableRight hidden">';
 				echo ($eqLogic->getIsVisible() == 1) ? '<i class="fas fa-eye" title="{{Equipement visible}}"></i>' : '<i class="fas fa-eye-slash" title="{{Equipement non visible}}"></i>';
 				echo '</span>';
