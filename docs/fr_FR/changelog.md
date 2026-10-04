@@ -1,5 +1,9 @@
 # Changelog plugin M5Dial
 
+## 0.9
+
+- Bouton « Récupérer la dernière version sur GitHub » : télécharge le firmware.bin de la dernière release du dépôt du plugin (firmware compilé sans aucun mot de passe).
+
 ## 0.8
 
 - Configuration : présentation corrigée, mot de passe OTA masqué (bouton afficher) et bouton « Générer un nouveau mot de passe ».

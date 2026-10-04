@@ -243,3 +243,31 @@ window.m5dialMinuteurAppairage = setInterval(function () {
   }
   m5dialAppairages()
 }, 4000)
+
+/* ------------------------------------------------------------------ */
+/* Firmware publie sur GitHub                                          */
+/* ------------------------------------------------------------------ */
+$('#bt_m5dialGithub').off('click').on('click', function () {
+  $('#span_m5dialGithub').text('{{Interrogation de GitHub...}}')
+  $.ajax({
+    type: 'POST',
+    url: 'plugins/m5dial/core/ajax/m5dial.ajax.php',
+    data: { action: 'githubTelecharger' },
+    dataType: 'json',
+    timeout: 120000,
+    error: function (request, status, error) {
+      $('#span_m5dialGithub').text('')
+      handleAjaxError(request, status, error)
+    },
+    success: function (data) {
+      if (data.state != 'ok') {
+        $('#span_m5dialGithub').text('')
+        $('#div_alert').showAlert({ message: data.result, level: 'danger' })
+        return
+      }
+      $('#span_m5dialGithub').text(data.result.source)
+      $('#span_m5dialFirmware, .m5dialFirmwareDispo').text(m5dialTexteFirmware(data.result))
+      $('#div_alert').showAlert({ message: '{{Firmware récupéré depuis GitHub}} : v' + data.result.version, level: 'success' })
+    }
+  })
+})

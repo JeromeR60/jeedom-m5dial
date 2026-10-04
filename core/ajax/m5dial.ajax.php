@@ -63,6 +63,14 @@ try {
 		ajax::success(m5dial::motDePasseOta());
 	}
 
+	// Firmware publie sur GitHub (page d'accueil du plugin).
+	if (init('action') == 'githubVerifier') {
+		ajax::success(m5dial::derniereReleaseGithub());
+	}
+	if (init('action') == 'githubTelecharger') {
+		ajax::success(m5dial::telechargerFirmwareGithub());
+	}
+
 	// Noms complets ([Objet][Equipement][Commande]) des commandes de l'editeur.
 	if (init('action') == 'nomsCommandes') {
 		$ids = json_decode(init('ids'), true);

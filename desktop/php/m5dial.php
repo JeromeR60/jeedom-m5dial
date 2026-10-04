@@ -43,6 +43,8 @@ $eqLogics = eqLogic::byType($plugin->getId());
 						<i class="fas fa-upload"></i> {{Déposer un firmware.bin}}
 						<input type="file" id="in_m5dialFirmware" accept=".bin" style="display:none;">
 					</label>
+					<a class="btn btn-primary btn-sm" id="bt_m5dialGithub" style="margin-left:5px;"><i class="fab fa-github"></i> {{Récupérer la dernière version sur GitHub}}</a>
+					<span id="span_m5dialGithub" style="margin-left:8px;"></span>
 					<span class="help-block">{{Fichier généré par PlatformIO (Build) : C:\.pio-build\m5dial\m5dial\firmware.bin. Ensuite, bouton « Mettre à jour le firmware » dans chaque équipement.}}</span>
 				</div>
 			</div>

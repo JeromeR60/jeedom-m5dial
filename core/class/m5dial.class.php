@@ -391,6 +391,77 @@ class m5dial extends eqLogic {
 		return $info;
 	}
 
+	/* ---- Firmware publie sur GitHub (releases du depot du plugin) ---- */
+	// Une release GitHub contient un fichier firmware.bin (compile SANS mot
+	// de passe : environnement PlatformIO m5dial_release). Jeedom le
+	// telecharge puis le sert aux boutons comme un fichier depose a la main.
+
+	const GITHUB_DEPOT = 'JeromeR60/jeedom-m5dial';
+
+	private static function requeteGithub($_url) {
+		$ch = curl_init($_url);
+		curl_setopt_array($ch, array(
+			CURLOPT_RETURNTRANSFER => true,
+			CURLOPT_FOLLOWLOCATION => true,
+			CURLOPT_TIMEOUT => 60,
+			CURLOPT_USERAGENT => 'jeedom-m5dial',
+			CURLOPT_HTTPHEADER => array('Accept: application/vnd.github+json'),
+		));
+		$reponse = curl_exec($ch);
+		$code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+		$erreur = curl_error($ch);
+		curl_close($ch);
+		if ($reponse === false || $code != 200) {
+			throw new Exception(__('GitHub injoignable ou réponse inattendue', __FILE__) . ' (' . ($erreur != '' ? $erreur : 'HTTP ' . $code) . ')');
+		}
+		return $reponse;
+	}
+
+	// Derniere release : version (tag), date, URL du firmware.bin joint.
+	public static function derniereReleaseGithub() {
+		$depot = config::byKey('github_depot', __CLASS__, self::GITHUB_DEPOT);
+		$release = json_decode(self::requeteGithub('https://api.github.com/repos/' . $depot . '/releases/latest'), true);
+		if (!is_array($release) || !isset($release['tag_name'])) {
+			throw new Exception(__('Aucune release trouvée sur GitHub', __FILE__) . ' (' . $depot . ')');
+		}
+		$url = '';
+		foreach ((isset($release['assets']) ? $release['assets'] : array()) as $asset) {
+			if (substr(strtolower($asset['name']), -4) == '.bin') {
+				$url = $asset['browser_download_url'];
+				break;
+			}
+		}
+		if ($url == '') {
+			throw new Exception(__('La release', __FILE__) . ' ' . $release['tag_name'] . ' ' . __('ne contient pas de fichier .bin', __FILE__));
+		}
+		$info = array(
+			'tag' => $release['tag_name'],
+			'nom' => isset($release['name']) ? $release['name'] : '',
+			'date' => isset($release['published_at']) ? substr($release['published_at'], 0, 10) : '',
+			'url' => $url,
+		);
+		config::save('github_derniere', $info, __CLASS__);
+		return $info;
+	}
+
+	// Telecharge le firmware de la derniere release et le depose dans le plugin.
+	public static function telechargerFirmwareGithub() {
+		$info = self::derniereReleaseGithub();
+		$contenu = self::requeteGithub($info['url']);
+		$temp = tempnam(jeedom::getTmpFolder(__CLASS__), 'fw');
+		file_put_contents($temp, $contenu);
+		try {
+			$resultat = self::enregistrerFirmware($temp, 'firmware.bin');
+		} finally {
+			if (file_exists($temp)) {
+				unlink($temp);
+			}
+		}
+		$resultat['source'] = 'GitHub ' . $info['tag'];
+		log::add(__CLASS__, 'info', __('Firmware récupéré depuis GitHub', __FILE__) . ' : ' . $info['tag'] . ' (v' . $resultat['version'] . ')');
+		return $resultat;
+	}
+
 	// Demande au bouton de telecharger le firmware depose (message non retenu).
 	public function lancerMajFirmware() {
 		if ($this->getLogicalId() == '') {
