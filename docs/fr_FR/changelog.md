@@ -1,5 +1,9 @@
 # Changelog plugin M5Dial
 
+## 0.9.1
+
+- Documentation complète : installation, portail Wi-Fi, appairage, écrans, mises à jour du firmware, topics MQTT, dépannage.
+
 ## 0.9
 
 - Bouton « Récupérer la dernière version sur GitHub » : télécharge le firmware.bin de la dernière release du dépôt du plugin (firmware compilé sans aucun mot de passe).
