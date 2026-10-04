@@ -46,6 +46,8 @@ class m5dial extends eqLogic {
 		'config_erreur' => array('Dernière erreur de configuration', 'info', 'string', '', 0),
 		'envoyer_config'=> array('Envoyer la configuration', 'action', 'other', '', 0),
 		'config_locale' => array('Revenir à la configuration locale', 'action', 'other', '', 0),
+		'maj_etat'      => array('État de la mise à jour', 'info', 'string', '', 0),
+		'maj_firmware'  => array('Mettre à jour le firmware', 'action', 'other', '', 0),
 	);
 
 	/* ---------------------------------------------------------------- */
@@ -126,6 +128,10 @@ class m5dial extends eqLogic {
 				}
 			}
 		}
+		// m5dial/<nom>/ota/etat : avancement d'une mise a jour du firmware.
+		if (isset($_topics['ota']) && is_array($_topics['ota']) && isset($_topics['ota']['etat'])) {
+			$this->checkAndUpdateCmd('maj_etat', $_topics['ota']['etat']);
+		}
 		// m5dial/<nom>/config/erreur : le topic "config" contient alors un
 		// tableau avec la cle "erreur" (le JSON de config lui-meme est ignore).
 		if (isset($_topics['config']) && is_array($_topics['config']) && isset($_topics['config']['erreur'])) {
@@ -202,6 +208,80 @@ class m5dial extends eqLogic {
 	}
 
 	/* ---------------------------------------------------------------- */
+	/* Mise a jour du firmware depuis Jeedom                             */
+	/* ---------------------------------------------------------------- */
+	// Le firmware.bin (genere par PlatformIO : .pio/build/m5dial/firmware.bin)
+	// est depose dans plugins/m5dial/data/ ; le bouton le telecharge en HTTP.
+
+	public static function dossierFirmware() {
+		return __DIR__ . '/../../data';
+	}
+
+	// Informations sur le firmware depose : version, taille, date (ou null).
+	public static function infoFirmware() {
+		$fichier = self::dossierFirmware() . '/firmware.json';
+		if (!file_exists($fichier) || !file_exists(self::dossierFirmware() . '/firmware.bin')) {
+			return null;
+		}
+		$info = json_decode(file_get_contents($fichier), true);
+		return is_array($info) ? $info : null;
+	}
+
+	// Verifie et enregistre un firmware envoye depuis la page du plugin.
+	public static function enregistrerFirmware($_cheminTemp, $_nomOrigine) {
+		if (strtolower(pathinfo($_nomOrigine, PATHINFO_EXTENSION)) != 'bin') {
+			throw new Exception(__('Le fichier doit être un .bin (firmware.bin de PlatformIO)', __FILE__));
+		}
+		$taille = filesize($_cheminTemp);
+		if ($taille < 100000 || $taille > 3300000) {
+			throw new Exception(__('Taille de fichier inattendue pour un firmware M5Dial', __FILE__) . ' : ' . $taille . ' ' . __('octets', __FILE__));
+		}
+		$contenu = file_get_contents($_cheminTemp);
+		if (ord($contenu[0]) != 0xE9) {
+			throw new Exception(__('Ce fichier n\'est pas une image de firmware ESP32', __FILE__));
+		}
+		if (!preg_match('/M5DIAL_FW_VERSION=([A-Za-z0-9._-]{1,20});/', $contenu, $m)) {
+			throw new Exception(__('Version introuvable dans le fichier : ce n\'est pas un firmware M5Dial (version 2.1 ou plus)', __FILE__));
+		}
+		$dossier = self::dossierFirmware();
+		if (!file_exists($dossier)) {
+			mkdir($dossier, 0775, true);
+		}
+		if (!move_uploaded_file($_cheminTemp, $dossier . '/firmware.bin') && !rename($_cheminTemp, $dossier . '/firmware.bin')) {
+			throw new Exception(__('Impossible d\'enregistrer le fichier dans', __FILE__) . ' ' . $dossier);
+		}
+		$info = array(
+			'version' => $m[1],
+			'taille' => $taille,
+			'md5' => md5($contenu),
+			'date' => date('Y-m-d H:i:s'),
+		);
+		file_put_contents($dossier . '/firmware.json', json_encode($info));
+		log::add(__CLASS__, 'info', __('Firmware déposé', __FILE__) . ' : ' . $m[1] . ' (' . $taille . ' ' . __('octets', __FILE__) . ')');
+		return $info;
+	}
+
+	// Demande au bouton de telecharger le firmware depose (message non retenu).
+	public function lancerMajFirmware() {
+		if ($this->getLogicalId() == '') {
+			throw new Exception(__('Renseignez le nom du bouton', __FILE__));
+		}
+		$info = self::infoFirmware();
+		if ($info === null) {
+			throw new Exception(__('Aucun firmware déposé : envoyez d\'abord un firmware.bin depuis la page du plugin', __FILE__));
+		}
+		$base = network::getNetworkAccess('internal');
+		if (strpos($base, 'http://') !== 0) {
+			throw new Exception(__('L\'adresse interne de Jeedom doit être en http:// (Réglages > Système > Configuration > Réseaux)', __FILE__) . ' : ' . $base);
+		}
+		$url = rtrim($base, '/') . '/plugins/m5dial/data/firmware.bin';
+		$message = json_encode(array('url' => $url, 'version' => $info['version']), JSON_UNESCAPED_SLASHES);
+		mqtt2::publish(self::TOPIC_RACINE . '/' . $this->getLogicalId() . '/ota', $message, array('retain' => false, 'qos' => 1));
+		$this->checkAndUpdateCmd('maj_etat', __('demandée', __FILE__) . ' (' . $info['version'] . ')');
+		log::add(__CLASS__, 'info', $this->getHumanName() . ' ' . __('mise à jour demandée vers', __FILE__) . ' ' . $info['version'] . ' : ' . $url);
+	}
+
+	/* ---------------------------------------------------------------- */
 	/* Cycle de vie de l'equipement                                      */
 	/* ---------------------------------------------------------------- */
 
@@ -254,6 +334,9 @@ class m5dialCmd extends cmd {
 				break;
 			case 'config_locale':
 				$eqLogic->revenirConfigurationLocale();
+				break;
+			case 'maj_firmware':
+				$eqLogic->lancerMajFirmware();
 				break;
 		}
 	}

@@ -25,6 +25,20 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				<span>{{Configuration}}</span>
 			</div>
 		</div>
+		<legend><i class="fas fa-microchip"></i> {{Firmware des boutons}}</legend>
+		<div class="form-horizontal" style="margin-left:10px;">
+			<div class="form-group">
+				<label class="col-sm-3 control-label">{{Firmware disponible pour les mises à jour}}</label>
+				<div class="col-sm-9">
+					<span class="label label-info" id="span_m5dialFirmware" style="font-size:1em;">{{chargement...}}</span>
+					<label class="btn btn-default btn-sm" style="margin-left:10px;margin-bottom:0;">
+						<i class="fas fa-upload"></i> {{Déposer un firmware.bin}}
+						<input type="file" id="in_m5dialFirmware" accept=".bin" style="display:none;">
+					</label>
+					<span class="help-block">{{Fichier généré par PlatformIO : .pio\build\m5dial\firmware.bin (après un Build). Ensuite, bouton « Mettre à jour le firmware » dans chaque équipement.}}</span>
+				</div>
+			</div>
+		</div>
 		<legend><i class="fas fa-table"></i> {{Mes boutons M5Dial}}</legend>
 		<?php
 		if (count($eqLogics) == 0) {
@@ -185,6 +199,20 @@ $eqLogics = eqLogic::byType($plugin->getId());
 						<!-- Partie droite de l'onglet "Équipement" -->
 						<!-- Affiche un champ de commentaire par défaut mais vous pouvez y mettre ce que vous voulez -->
 						<div class="col-lg-6">
+							<legend><i class="fas fa-microchip"></i> {{Firmware}}</legend>
+							<div class="form-group">
+								<label class="col-sm-4 control-label">{{Disponible dans Jeedom}}</label>
+								<div class="col-sm-6">
+									<span class="label label-info m5dialFirmwareDispo">-</span>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="col-sm-4 control-label"></label>
+								<div class="col-sm-6">
+									<a class="btn btn-primary btn-sm" id="bt_m5dialMajFirmware"><i class="fas fa-download"></i> {{Mettre à jour le firmware}}</a>
+									<span class="help-block">{{Le bouton télécharge le firmware depuis Jeedom puis redémarre (environ 30 s). Suivi dans la commande « État de la mise à jour ».}}</span>
+								</div>
+							</div>
 							<legend><i class="fas fa-info"></i> {{Informations}}</legend>
 							<div class="form-group">
 								<label class="col-sm-4 control-label">{{Description}}</label>

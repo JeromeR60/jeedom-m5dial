@@ -26,6 +26,27 @@ try {
 		ajax::success();
 	}
 
+	// Depot d'un firmware.bin (page du plugin).
+	if (init('action') == 'envoyerFirmware') {
+		if (!isset($_FILES['fichier']) || $_FILES['fichier']['error'] != UPLOAD_ERR_OK) {
+			throw new Exception(__('Fichier non reçu', __FILE__) . (isset($_FILES['fichier']) ? ' (' . $_FILES['fichier']['error'] . ')' : ''));
+		}
+		ajax::success(m5dial::enregistrerFirmware($_FILES['fichier']['tmp_name'], $_FILES['fichier']['name']));
+	}
+
+	if (init('action') == 'infoFirmware') {
+		ajax::success(m5dial::infoFirmware());
+	}
+
+	if (init('action') == 'majFirmware') {
+		$eqLogic = m5dial::byId(init('id'));
+		if (!is_object($eqLogic)) {
+			throw new Exception(__('Equipement introuvable', __FILE__) . ' : ' . init('id'));
+		}
+		$eqLogic->lancerMajFirmware();
+		ajax::success();
+	}
+
 	// Noms complets ([Objet][Equipement][Commande]) des commandes de l'editeur.
 	if (init('action') == 'nomsCommandes') {
 		$ids = json_decode(init('ids'), true);

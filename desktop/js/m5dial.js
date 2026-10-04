@@ -125,4 +125,62 @@ $('#bt_m5dialConfigLocale').off('click').on('click', function () {
    l'editeur des ecrans a partir du JSON enregistre. */
 function printEqLogic(_eqLogic) {
   m5dialAfficher()
+  m5dialInfoFirmware()
 }
+
+/* ------------------------------------------------------------------ */
+/* Firmware : depot du fichier et mise a jour des boutons              */
+/* ------------------------------------------------------------------ */
+function m5dialTexteFirmware(_info) {
+  if (!_info) return '{{aucun firmware déposé}}'
+  return 'v' + _info.version + ' (' + Math.round(_info.taille / 1024) + ' Ko, ' + _info.date + ')'
+}
+
+function m5dialInfoFirmware() {
+  $.ajax({
+    type: 'POST',
+    url: 'plugins/m5dial/core/ajax/m5dial.ajax.php',
+    data: { action: 'infoFirmware' },
+    dataType: 'json',
+    error: function (request, status, error) { handleAjaxError(request, status, error) },
+    success: function (data) {
+      if (data.state != 'ok') return
+      $('#span_m5dialFirmware, .m5dialFirmwareDispo').text(m5dialTexteFirmware(data.result))
+    }
+  })
+}
+
+$('#in_m5dialFirmware').off('change').on('change', function () {
+  var fichier = this.files[0]
+  if (!fichier) return
+  var fd = new FormData()
+  fd.append('action', 'envoyerFirmware')
+  fd.append('fichier', fichier)
+  $('#span_m5dialFirmware').text('{{envoi en cours...}}')
+  $.ajax({
+    type: 'POST',
+    url: 'plugins/m5dial/core/ajax/m5dial.ajax.php',
+    data: fd,
+    processData: false,
+    contentType: false,
+    dataType: 'json',
+    error: function (request, status, error) { handleAjaxError(request, status, error) },
+    success: function (data) {
+      $('#in_m5dialFirmware').val('')
+      if (data.state != 'ok') {
+        $('#div_alert').showAlert({ message: data.result, level: 'danger' })
+        m5dialInfoFirmware()
+        return
+      }
+      $('#div_alert').showAlert({ message: '{{Firmware déposé}} : v' + data.result.version, level: 'success' })
+      $('#span_m5dialFirmware, .m5dialFirmwareDispo').text(m5dialTexteFirmware(data.result))
+    }
+  })
+})
+
+$('#bt_m5dialMajFirmware').off('click').on('click', function () {
+  m5dialAction('majFirmware', '{{Mise à jour demandée : le bouton télécharge le firmware puis redémarre}}')
+})
+
+// Page d'accueil du plugin : affiche le firmware disponible.
+m5dialInfoFirmware()
