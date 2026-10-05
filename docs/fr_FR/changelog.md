@@ -1,5 +1,9 @@
 # Changelog plugin M5Dial
 
+## 1.3.2
+
+- Documentation : exemple complet badges RFID et présence (virtuel, variable, scénarios).
+
 ## 1.3.1
 
 - Documentation : captures pas à pas de l'installation d'un bouton neuf.

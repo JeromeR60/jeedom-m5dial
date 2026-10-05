@@ -189,7 +189,7 @@ Cochez les écrans à afficher sur le bouton, puis choisissez les commandes Jeed
 | **Actions groupées** | tout allumer / éteindre, ouvrir / fermer tous les volets ou par étage, heure de fermeture automatique |
 | **Chauffage** | température ambiante, consigne (info, curseur, mini, maxi, pas), modes Confort / Nuit / Vacances / Off, statut de chauffe, puissance, température extérieure |
 | **Capteurs** | une ligne par pièce : nom, température, humidité |
-| **Badges RFID** | commande message appelée quand un badge est passé, et commande pour enregistrer un nouveau badge |
+| **Badges RFID** | commande message appelée quand un badge est passé, commande pour enregistrer un nouveau badge, et info qui renvoie le résultat à afficher (voir l'exemple complet au §5.1) |
 
 > Écrivez les noms affichés **sans accents** : la police du bouton ne les contient pas.
 
@@ -205,6 +205,65 @@ Pour annuler, **Revenir à la configuration locale** rend au bouton son `config.
 Il contient la configuration générée par l'onglet *Écrans du bouton*. Vous pouvez aussi la coller ou la modifier à la main. Sections reconnues : `presence`, `lumieres`, `volets`, `voletPositionFermee`, `groupes`, `chauffage`, `capteurs`, `badges`. La section `device` est ignorée (le bouton garde son nom et son broker). Taille maximale : **8 Ko**.
 
 En cas d'erreur, le bouton garde sa configuration précédente et renseigne la commande *Dernière erreur de configuration*.
+
+### 5.1 Exemple complet : badges RFID et présence
+
+Le bouton **ne décide rien** : il lit le badge et envoie son identifiant (UID) à Jeedom. C'est Jeedom qui sait à qui appartient le badge, change le mode de présence et renvoie le résultat, que le bouton affiche 3 secondes (« Jerome -> Absent », « Badge inconnu… »). La liste des badges est donc entièrement gérée dans Jeedom.
+
+Le bouton lit les badges **13,56 MHz** (Mifare, NFC). Les badges 125 kHz ne sont pas lus.
+
+#### a. Un virtuel « Badges M5Dial »
+
+Créez un équipement **Virtuel** avec ces commandes :
+
+| Nom | Type | Réglage |
+| --- | --- | --- |
+| Dernier UID | info / autre | **Répéter les valeurs identiques : Oui** (sert de déclencheur) |
+| Set UID | action / **message** | Paramètres : met à jour **Dernier UID** avec `#message#` |
+| UID à enregistrer | info / autre | **Répéter les valeurs identiques : Oui** (déclencheur) |
+| Enregistrer UID | action / **message** | Paramètres : met à jour **UID à enregistrer** avec `#message#` |
+| Dernière personne | info / autre | historisée (facultatif) |
+| Dernier changement | info / autre | **Répéter les valeurs identiques : Oui** (sinon deux résultats identiques de suite ne sont pas renvoyés et le bouton affiche « Pas de réponse de Jeedom ») |
+
+> Piège du plugin Virtuel : pour qu'une action mette réellement une info à jour, utilisez la colonne **Paramètres** de l'action (choisir l'info, valeur `#message#`). La liste sous le nom de l'action ne sert qu'à l'affichage du widget.
+
+#### b. Une variable avec la liste des badges
+
+Variable de scénario **`badges_m5dial`**, au format texte `UID=Prénom;UID=Prénom`, par exemple :
+
+```
+35218FC2=Jerome;A1B2C3D4=Marie
+```
+
+UID en majuscules, sans accents dans les prénoms. C'est là qu'on renomme ou supprime un badge (Outils → Scénarios → Variables). Évitez le format JSON : la page des variables l'affiche mal et peut l'écraser.
+
+#### c. Scénario « Bascule présence par badge »
+
+Déclencheur : **#[Maison][Badges M5Dial][Dernier UID]#**.
+
+1. Chercher l'UID reçu dans la variable `badges_m5dial`.
+2. **UID inconnu** → mettre `Badge inconnu <UID>` dans **Dernier changement**, et ne rien faire d'autre.
+3. **UID connu** → si le mode de présence actuel est « Présent », lancer l'action **Absent**, sinon l'action **Présent**.
+4. Mettre le prénom dans **Dernière personne** et `<Prénom> -> <nouveau mode>` dans **Dernier changement**.
+
+#### d. Scénario « Enregistrement d'un badge »
+
+Déclencheur : **#[Maison][Badges M5Dial][UID à enregistrer]#**.
+
+1. UID déjà dans la variable → `Badge deja connu : <Prénom>` dans **Dernier changement**.
+2. Sinon → ajouter `<UID>=Badge N` à la variable (nom provisoire à renommer ensuite) et mettre `Nouveau badge : Badge N (<UID>)` dans **Dernier changement**.
+
+#### e. Dans l'onglet « Écrans du bouton »
+
+Section **Badges RFID** :
+
+- **Badge passé (message)** → `[Maison][Badges M5Dial][Set UID]`
+- **Enregistrer un badge (message)** → `[Maison][Badges M5Dial][Enregistrer UID]`
+- **Dernier changement (info)** → `[Maison][Badges M5Dial][Dernier changement]`
+
+Pour ajouter un badge : sur le bouton, menu **Badges → Ajouter badge**, puis présentez le badge. Renommez-le ensuite dans la variable `badges_m5dial`.
+
+Vous pouvez bien sûr adapter les scénarios : ouvrir une serrure, désarmer une alarme, prévenir sur le téléphone, etc. Le bouton se contente d'envoyer l'UID et d'afficher le texte de **Dernier changement**.
 
 ---
 
