@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Installer un M5Dial pour Jeedom</title>
+<script type="module" src="https://unpkg.com/esp-web-tools@10/dist/web/install-button.js?module"></script>
+<style>
+  :root { --fond:#f5f5f5; --carte:#fff; --texte:#222; --doux:#666; --accent:#f39c12; }
+  @media (prefers-color-scheme: dark) { :root { --fond:#1b1b1b; --carte:#262626; --texte:#eee; --doux:#aaa; } }
+  body { margin:0; background:var(--fond); color:var(--texte); font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; line-height:1.5; }
+  main { max-width:720px; margin:0 auto; padding:24px 16px 48px; }
+  h1 { font-size:1.6em; margin:0 0 4px; }
+  .sous-titre { color:var(--doux); margin:0 0 24px; }
+  .carte { background:var(--carte); border-radius:12px; padding:20px; margin-bottom:16px; box-shadow:0 1px 3px rgba(0,0,0,.08); }
+  ol { padding-left:22px; margin:0; } li { margin:6px 0; }
+  .bouton { text-align:center; padding:12px 0 4px; }
+  esp-web-install-button button[slot=activate] { background:var(--accent); color:#fff; border:0; border-radius:8px; padding:14px 28px; font-size:1.1em; cursor:pointer; }
+  .avertissement { color:var(--doux); font-size:.9em; }
+  code { background:rgba(127,127,127,.15); padding:1px 5px; border-radius:4px; }
+  a { color:var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>Installer un M5Dial pour Jeedom</h1>
+  <p class="sous-titre">Firmware du plugin Jeedom M5Dial, à installer depuis ce navigateur, sans logiciel.</p>
+
+  <div class="carte">
+    <ol>
+      <li>Utilisez <strong>Chrome</strong> ou <strong>Edge</strong> sur un ordinateur (Windows, macOS ou Linux).</li>
+      <li>Branchez le M5Dial avec un câble <strong>USB-C de données</strong> (certains câbles ne font que la charge).</li>
+      <li>Cliquez sur <strong>Installer</strong>, choisissez le port du M5Dial dans la liste, puis acceptez l'effacement.</li>
+      <li>Attendez la fin (environ 1 à 2 minutes). Le bouton redémarre sur son <strong>portail de configuration</strong> : suivez la <a href="https://github.com/JeromeR60/jeedom-m5dial/blob/main/docs/fr_FR/index.md" target="_blank" rel="noopener">documentation du plugin</a> (portail Wi-Fi puis appairage).</li>
+    </ol>
+    <div class="bouton">
+      <esp-web-install-button manifest="manifest.json">
+        <button slot="activate">Installer</button>
+        <span slot="unsupported">Votre navigateur ne permet pas l'installation : utilisez Chrome ou Edge sur ordinateur.</span>
+        <span slot="not-allowed">L'installation demande une page sécurisée (https).</span>
+      </esp-web-install-button>
+    </div>
+  </div>
+
+  <div class="carte avertissement">
+    <p><strong>Le bouton n'apparaît pas dans la liste ?</strong> Essayez un autre câble USB-C. Si besoin, débranchez le M5Dial, maintenez le bouton situé à l'arrière, rebranchez-le, puis relâchez.</p>
+    <p>L'installation efface entièrement le M5Dial (Wi-Fi et appairage compris). Pour mettre à jour un bouton déjà installé, utilisez plutôt Jeedom : plugin M5Dial, « Mettre à jour le firmware ».</p>
+    <p>Projet indépendant, non affilié à M5Stack. Licence AGPL.</p>
+  </div>
+</main>
+</body>
+</html>

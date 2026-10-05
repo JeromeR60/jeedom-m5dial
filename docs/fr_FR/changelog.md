@@ -1,5 +1,9 @@
 # Changelog plugin M5Dial
 
+## 1.1
+
+- Page d'installation web d'un M5Dial neuf (Chrome / Edge, câble USB-C), avec le firmware 2.4.
+
 ## 1.0.1
 
 - Documentation : nouvelles captures (configuration, fonctionnalités, firmware).

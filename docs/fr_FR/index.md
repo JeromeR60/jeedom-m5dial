@@ -63,9 +63,17 @@ La vérification des nouvelles versions est lancée chaque nuit par la tâche **
 
 ## 3. Premier démarrage d'un bouton
 
-### 3.1 Installer le firmware
+### 3.1 Installer le firmware (bouton neuf)
 
-La toute première installation se fait par câble USB depuis PlatformIO (environnement `m5dial_release` : firmware sans aucun mot de passe). Les mises à jour suivantes se font depuis Jeedom (voir §6).
+L'installation se fait **depuis le navigateur**, sans logiciel à installer :
+
+1. Sur un ordinateur, ouvrez **Chrome** ou **Edge** à l'adresse **https://jeromer60.github.io/jeedom-m5dial/installer/**.
+2. Branchez le M5Dial avec un câble **USB-C de données**.
+3. Cliquez sur **Installer**, choisissez le port du M5Dial, acceptez l'effacement et patientez 1 à 2 minutes.
+
+Le bouton redémarre sur son portail de configuration. Les mises à jour suivantes se font depuis Jeedom (voir §6).
+
+> Si le M5Dial n'apparaît pas dans la liste : essayez un autre câble, ou débranchez-le, maintenez le bouton situé à l'arrière, rebranchez-le puis relâchez.
 
 ### 3.2 Portail de configuration Wi-Fi
 
