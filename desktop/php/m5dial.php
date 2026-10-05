@@ -39,13 +39,15 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				<label class="col-sm-3 control-label">{{Firmware disponible pour les mises à jour}}</label>
 				<div class="col-sm-9">
 					<span class="label label-info" id="span_m5dialFirmware" style="font-size:1em;">{{chargement...}}</span>
-					<label class="btn btn-default btn-sm" style="margin-left:10px;margin-bottom:0;">
+					<a class="btn btn-primary btn-sm" id="bt_m5dialGithub" style="margin-left:10px;"><i class="fab fa-github"></i> {{Récupérer la dernière version sur GitHub}}</a>
+					<?php if (config::byKey('mode_avance', 'm5dial', 0) == 1) { ?>
+					<label class="btn btn-default btn-sm" style="margin-left:5px;margin-bottom:0;">
 						<i class="fas fa-upload"></i> {{Déposer un firmware.bin}}
 						<input type="file" id="in_m5dialFirmware" accept=".bin" style="display:none;">
 					</label>
-					<a class="btn btn-primary btn-sm" id="bt_m5dialGithub" style="margin-left:5px;"><i class="fab fa-github"></i> {{Récupérer la dernière version sur GitHub}}</a>
+					<?php } ?>
 					<span id="span_m5dialGithub" style="margin-left:8px;"></span>
-					<span class="help-block">{{Fichier généré par PlatformIO (Build) : C:\.pio-build\m5dial\m5dial\firmware.bin. Ensuite, bouton « Mettre à jour le firmware » dans chaque équipement.}}</span>
+					<span class="help-block">{{Récupérez la dernière version, puis cliquez sur « Mettre à jour le firmware » dans chaque équipement. Le plugin vérifie aussi chaque nuit si une nouvelle version est publiée.}}</span>
 				</div>
 			</div>
 		</div>
@@ -99,6 +101,10 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				if ($version != '') {
 					$titre = ($source == 'mqtt') ? '{{Configuration envoyée par Jeedom}}' : (($source == 'locale') ? '{{Configuration locale du bouton}}' : '');
 					echo ' <span style="opacity:0.8;" title="' . $titre . '">· v' . htmlspecialchars($version) . '</span>';
+				}
+				$cmd = $eqLogic->getCmd('info', 'maj_dispo');
+				if (is_object($cmd) && $cmd->execCmd() == 1) {
+					echo ' <span class="label label-warning" style="font-size:0.85em;" title="{{Une nouvelle version du firmware est disponible}}">{{MAJ dispo}}</span>';
 				}
 				echo '</span>';
 				echo '<span class="hiddenAsCard displayTableRight hidden">';

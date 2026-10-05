@@ -48,6 +48,11 @@ Toute la communication passe par **MQTT**.
 
 > Le mot de passe OTA ne sert qu'aux mises à jour depuis PlatformIO (développement). Les mises à jour depuis Jeedom n'en ont pas besoin.
 
+### Section « Mises à jour du firmware »
+
+- **Installer automatiquement les nouvelles versions** (décoché par défaut) : chaque nuit, le plugin vérifie la dernière version publiée. Il vous prévient toujours ; si la case est cochée, il installe aussi la nouvelle version sur les boutons en ligne.
+- **Mode avancé (développeur)** : affiche le bouton « Déposer un firmware.bin » pour installer un firmware compilé soi-même.
+
 ---
 
 ## 3. Premier démarrage d'un bouton
@@ -91,6 +96,8 @@ Si le bouton ne connaît pas encore ses identifiants MQTT, il passe en **appaira
 
 Quelques secondes plus tard, l'équipement est **créé automatiquement** dans Jeedom.
 
+> Un bouton déjà connu de Jeedom (même adresse MAC), par exemple après une réinitialisation, est **reconnu automatiquement** : il retrouve son équipement, ses commandes et sa configuration, même s'il revient sous un autre nom.
+
 ---
 
 ## 4. Les équipements
@@ -128,6 +135,7 @@ Chaque bouton apparaît dans **Mes boutons M5Dial** dès qu'il se connecte au br
 | Envoyer la configuration | action | envoie la configuration de l'équipement au bouton |
 | Revenir à la configuration locale | action | efface la configuration envoyée : le bouton reprend son `config.json` interne |
 | Mettre à jour le firmware | action | lance la mise à jour avec le firmware disponible dans Jeedom |
+| Mise à jour disponible | info binaire | 1 si une version plus récente du firmware est publiée (utilisable dans un scénario) |
 
 Les informations sont rafraîchies toutes les 5 minutes et à chaque reconnexion du bouton.
 
@@ -177,7 +185,7 @@ En cas d'erreur, le bouton garde sa configuration précédente et renseigne la c
 Sur la page du plugin, section **Firmware des boutons** :
 
 - **Récupérer la dernière version sur GitHub** (recommandé) : télécharge le `firmware.bin` de la dernière release publiée. Ces firmwares sont compilés **sans aucun mot de passe** ; chaque bouton garde ses propres réglages.
-- ou **Déposer un firmware.bin** : envoie un fichier que vous avez compilé avec PlatformIO.
+- ou, en **mode avancé** uniquement, **Déposer un firmware.bin** : envoie un fichier que vous avez compilé avec PlatformIO.
 
 ![Firmware des boutons](../images/firmware.png)
 
@@ -190,6 +198,16 @@ Dans l'équipement, cliquez sur **Mettre à jour le firmware** (ou utilisez la c
 Le bouton télécharge le firmware depuis Jeedom, l'installe puis redémarre (environ 30 secondes). La commande **État de la mise à jour** suit l'avancement (pourcentage, `ok, redemarrage` ou message d'erreur). En cas de coupure, le bouton fait jusqu'à 3 tentatives.
 
 La version affichée sur la vignette change dès que le bouton est de retour en ligne.
+
+### 6.3 Être prévenu des nouvelles versions
+
+Chaque nuit, le plugin consulte la dernière version publiée. Si un bouton est en retard :
+
+- un **message Jeedom** l'indique (une seule fois par version) ;
+- la vignette affiche un badge **MAJ dispo** ;
+- la commande **Mise à jour disponible** passe à 1 (pratique pour une notification par scénario).
+
+Avec l'option **Installer automatiquement les nouvelles versions**, le plugin télécharge le firmware et met à jour lui-même les boutons en ligne.
 
 ---
 

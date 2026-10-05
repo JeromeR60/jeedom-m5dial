@@ -28,6 +28,9 @@ try {
 
 	// Depot d'un firmware.bin (page du plugin).
 	if (init('action') == 'envoyerFirmware') {
+		if (config::byKey('mode_avance', 'm5dial', 0) != 1) {
+			throw new Exception(__('Activez le mode avancé dans la configuration du plugin pour déposer un firmware', __FILE__));
+		}
 		if (!isset($_FILES['fichier']) || $_FILES['fichier']['error'] != UPLOAD_ERR_OK) {
 			throw new Exception(__('Fichier non reçu', __FILE__) . (isset($_FILES['fichier']) ? ' (' . $_FILES['fichier']['error'] . ')' : ''));
 		}

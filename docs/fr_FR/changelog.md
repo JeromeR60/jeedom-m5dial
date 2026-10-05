@@ -1,5 +1,12 @@
 # Changelog plugin M5Dial
 
+## 1.0
+
+- Un bouton déjà connu (même adresse MAC) qui revient sous un autre nom, après une réinitialisation ou un réappairage, retrouve automatiquement son équipement et sa configuration.
+- Vérification chaque nuit de la dernière version du firmware publiée sur GitHub : message Jeedom, badge « MAJ dispo » sur la vignette et nouvelle commande info « Mise à jour disponible ».
+- Option « Installer automatiquement les nouvelles versions » (désactivée par défaut).
+- « Déposer un firmware.bin » réservé au mode avancé (configuration du plugin).
+
 ## 0.9.3
 
 - Documentation illustrée (captures d'écran Jeedom, photos du bouton, portail).

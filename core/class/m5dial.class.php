@@ -48,6 +48,7 @@ class m5dial extends eqLogic {
 		'config_locale' => array('Revenir à la configuration locale', 'action', 'other', '', 0),
 		'maj_etat'      => array('État de la mise à jour', 'info', 'string', '', 0),
 		'maj_firmware'  => array('Mettre à jour le firmware', 'action', 'other', '', 0),
+		'maj_dispo'     => array('Mise à jour disponible', 'info', 'binary', '', 0),
 	);
 
 	/* ---------------------------------------------------------------- */
@@ -78,25 +79,79 @@ class m5dial extends eqLogic {
 			}
 			$eqLogic = self::byLogicalId($nom, __CLASS__);
 			if (!is_object($eqLogic)) {
-				// Nouveau bouton : creation automatique, seulement s'il se
-				// presente lui-meme (status/info), pas sur un simple message de
-				// configuration publie par quelqu'un d'autre.
-				if (!isset($topics['status']) && !isset($topics['info'])) {
+				// Bouton inconnu sous ce nom. On attend son message info (retenu,
+				// publie a chaque connexion) qui contient l'adresse MAC : un simple
+				// status ne suffit pas, sinon un bouton renomme ou reinitialise
+				// creerait un doublon avant d'etre reconnu.
+				$info = (isset($topics['info']) && is_array($topics['info'])) ? $topics['info'] : null;
+				if ($info === null) {
 					continue;
 				}
-				$eqLogic = new m5dial();
-				$eqLogic->setEqType_name(__CLASS__);
-				$eqLogic->setLogicalId($nom);
-				$eqLogic->setName($nom);
-				$eqLogic->setIsEnable(1);
-				$eqLogic->setIsVisible(1);
-				$eqLogic->save();
-				log::add(__CLASS__, 'info', __('Nouveau bouton détecté', __FILE__) . ' : ' . $nom);
+				$mac = isset($info['mac']) ? self::normaliserMac($info['mac']) : '';
+				$eqLogic = ($mac != '') ? self::parMac($mac) : null;
+				if (is_object($eqLogic)) {
+					// Bouton deja connu (meme MAC) revenu sous un autre nom :
+					// on lui rend son equipement et sa configuration.
+					$eqLogic->rattacher($nom);
+				} else {
+					$eqLogic = new m5dial();
+					$eqLogic->setEqType_name(__CLASS__);
+					$eqLogic->setLogicalId($nom);
+					$eqLogic->setName($nom);
+					$eqLogic->setIsEnable(1);
+					$eqLogic->setIsVisible(1);
+					if ($mac != '') {
+						$eqLogic->setConfiguration('mac', $mac);
+					}
+					$eqLogic->save();
+					log::add(__CLASS__, 'info', __('Nouveau bouton détecté', __FILE__) . ' : ' . $nom . ($mac != '' ? ' (' . $mac . ')' : ''));
+				}
 			}
 			if ($eqLogic->getIsEnable() != 1) {
 				continue;
 			}
 			$eqLogic->traiterMessages($topics);
+		}
+	}
+
+	public static function normaliserMac($_mac) {
+		return strtoupper(preg_replace('/[^0-9A-Fa-f]/', '', (string) $_mac));
+	}
+
+	// Equipement deja associe a cette adresse MAC (ou null).
+	public static function parMac($_mac) {
+		$mac = self::normaliserMac($_mac);
+		if ($mac == '') {
+			return null;
+		}
+		foreach (self::byType(__CLASS__) as $eqLogic) {
+			if (self::normaliserMac($eqLogic->getConfiguration('mac', '')) == $mac) {
+				return $eqLogic;
+			}
+		}
+		return null;
+	}
+
+	// Le bouton revient sous un nouveau nom (reinitialisation, renommage) :
+	// l'equipement prend ce nom, l'ancien topic de configuration est vide et
+	// la configuration est renvoyee sur le nouveau.
+	public function rattacher($_nouveauNom) {
+		$ancien = $this->getLogicalId();
+		if ($ancien == $_nouveauNom) {
+			return;
+		}
+		$this->setLogicalId($_nouveauNom);
+		$this->save(true);
+		log::add(__CLASS__, 'info', $this->getHumanName() . ' ' . __('reconnu par son adresse MAC', __FILE__) . ' : ' . $ancien . ' -> ' . $_nouveauNom);
+		if ($ancien != '' && class_exists('mqtt2')) {
+			mqtt2::publish(self::TOPIC_RACINE . '/' . $ancien . '/config', '', array('retain' => true, 'qos' => 1));
+		}
+		try {
+			if (self::decoderConfig($this->getConfiguration('configJson', '')) !== null) {
+				$this->envoyerConfiguration();
+			}
+		} catch (Exception $e) {
+			log::add(__CLASS__, 'warning', $this->getHumanName() . ' ' . __('configuration non renvoyée', __FILE__) . ' : ' . $e->getMessage());
 		}
 	}
 
@@ -122,10 +177,14 @@ class m5dial extends eqLogic {
 			}
 			// Infos utiles conservees dans la configuration de l'equipement.
 			foreach (array('clientId', 'mac', 'ssid') as $cle) {
-				if (isset($info[$cle]) && $this->getConfiguration($cle) != $info[$cle]) {
-					$this->setConfiguration($cle, $info[$cle]);
+				$valeur = isset($info[$cle]) ? (($cle == 'mac') ? self::normaliserMac($info[$cle]) : $info[$cle]) : null;
+				if ($valeur !== null && $valeur != '' && $this->getConfiguration($cle) != $valeur) {
+					$this->setConfiguration($cle, $valeur);
 					$this->save(true);
 				}
+			}
+			if (isset($info['version'])) {
+				$this->majDisponible();
 			}
 		}
 		// m5dial/<nom>/ota/etat : avancement d'une mise a jour du firmware.
@@ -458,8 +517,90 @@ class m5dial extends eqLogic {
 			}
 		}
 		$resultat['source'] = 'GitHub ' . $info['tag'];
+		foreach (self::byType(__CLASS__) as $eqLogic) {
+			$eqLogic->majDisponible();
+		}
 		log::add(__CLASS__, 'info', __('Firmware récupéré depuis GitHub', __FILE__) . ' : ' . $info['tag'] . ' (v' . $resultat['version'] . ')');
 		return $resultat;
+	}
+
+	/* ---- Mises a jour disponibles (verification quotidienne) ---- */
+
+	// Version du firmware de la derniere release connue ("firmware-2.3" -> "2.3").
+	public static function versionDerniereRelease() {
+		$info = config::byKey('github_derniere', __CLASS__, array());
+		if (!is_array($info) || !isset($info['tag'])) {
+			return '';
+		}
+		return preg_replace('/^[^0-9]*/', '', $info['tag']);
+	}
+
+	// Met a jour la commande "Mise a jour disponible" de ce bouton.
+	public function majDisponible($_versionRelease = null) {
+		$release = ($_versionRelease === null) ? self::versionDerniereRelease() : $_versionRelease;
+		$cmd = $this->getCmd('info', 'version');
+		$version = is_object($cmd) ? (string) $cmd->execCmd() : '';
+		$dispo = ($release != '' && $version != '' && version_compare($release, $version, '>')) ? 1 : 0;
+		$this->checkAndUpdateCmd('maj_dispo', $dispo);
+		return $dispo == 1;
+	}
+
+	// Appelee chaque nuit (cronDaily) : interroge GitHub, signale les boutons
+	// en retard et, si l'option est cochee, les met a jour.
+	public static function verifierMisesAJour() {
+		try {
+			self::derniereReleaseGithub();
+		} catch (Exception $e) {
+			log::add(__CLASS__, 'warning', __('Vérification des mises à jour impossible', __FILE__) . ' : ' . $e->getMessage());
+			return;
+		}
+		$release = self::versionDerniereRelease();
+		$enRetard = array();
+		foreach (self::byType(__CLASS__, true) as $eqLogic) {
+			if ($eqLogic->majDisponible($release)) {
+				$enRetard[] = $eqLogic;
+			}
+		}
+		log::add(__CLASS__, 'info', __('Dernier firmware publié', __FILE__) . ' : ' . $release . ', ' . count($enRetard) . ' ' . __('bouton(s) à mettre à jour', __FILE__));
+		if (count($enRetard) == 0) {
+			return;
+		}
+		// Un seul message par nouvelle version.
+		if (config::byKey('notif_version', __CLASS__, '') != $release) {
+			$noms = array();
+			foreach ($enRetard as $eqLogic) {
+				$noms[] = $eqLogic->getName();
+			}
+			message::add(__CLASS__, __('Firmware M5Dial', __FILE__) . ' ' . $release . ' ' . __('disponible pour', __FILE__) . ' : ' . implode(', ', $noms), '', 'm5dial_maj_' . $release);
+			config::save('notif_version', $release, __CLASS__);
+		}
+		if (config::byKey('maj_auto', __CLASS__, 0) != 1) {
+			return;
+		}
+		try {
+			$depose = self::infoFirmware();
+			if ($depose === null || version_compare($release, $depose['version'], '>')) {
+				self::telechargerFirmwareGithub();
+			}
+		} catch (Exception $e) {
+			log::add(__CLASS__, 'error', __('Mise à jour automatique : téléchargement impossible', __FILE__) . ' : ' . $e->getMessage());
+			return;
+		}
+		foreach ($enRetard as $eqLogic) {
+			$cmd = $eqLogic->getCmd('info', 'online');
+			if (!is_object($cmd) || $cmd->execCmd() != 1) {
+				continue;
+			}
+			try {
+				$eqLogic->lancerMajFirmware();
+			} catch (Exception $e) {
+				log::add(__CLASS__, 'error', $eqLogic->getHumanName() . ' ' . $e->getMessage());
+			}
+		}
+	}
+
+	public static function cronDaily() {
+		self::verifierMisesAJour();
 	}
 
 	// Demande au bouton de telecharger le firmware depose (message non retenu).
