@@ -1,5 +1,9 @@
 # Changelog plugin M5Dial
 
+## 1.3.1
+
+- Documentation : captures pas à pas de l'installation d'un bouton neuf.
+
 ## 1.3
 
 - Nouvelle icône du plugin au format du Market (309 × 348) ; les vignettes gardent l'image du bouton.

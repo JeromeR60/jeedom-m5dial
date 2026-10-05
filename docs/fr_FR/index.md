@@ -65,13 +65,29 @@ La vérification des nouvelles versions est lancée chaque nuit par la tâche **
 
 ### 3.1 Installer le firmware (bouton neuf)
 
-L'installation se fait **depuis le navigateur**, sans logiciel à installer :
+L'installation se fait **depuis le navigateur**, sans logiciel à installer.
 
-1. Sur un ordinateur, ouvrez **Chrome** ou **Edge** à l'adresse **https://jeromer60.github.io/jeedom-m5dial/installer/**.
-2. Branchez le M5Dial avec un câble **USB-C de données**.
-3. Cliquez sur **Installer**, choisissez le port du M5Dial, acceptez l'effacement et patientez 1 à 2 minutes.
+1. Sur un ordinateur, ouvrez **Chrome** ou **Edge** à l'adresse **https://jeromer60.github.io/jeedom-m5dial/installer/** et branchez le M5Dial avec un câble **USB-C de données**.
 
-Le bouton redémarre sur son portail de configuration. Les mises à jour suivantes se font depuis Jeedom (voir §6).
+   <img src="../images/installation-page.png" alt="Page d'installation" width="560">
+
+2. Cliquez sur **Installer**, choisissez le port du M5Dial dans la liste du navigateur (souvent « USB JTAG/serial debug unit »), puis **Install M5Dial pour Jeedom**.
+
+   <img src="../images/installation-menu.png" alt="Menu d'installation" width="420">
+
+3. Laissez cochée la case **Erase device** (effacement complet, conseillé pour un bouton neuf), puis **Next**.
+
+   <img src="../images/installation-effacer.png" alt="Effacement du bouton" width="420">
+
+4. Confirmez avec **Install**.
+
+   <img src="../images/installation-confirmer.png" alt="Confirmation de l'installation" width="420">
+
+5. Patientez 1 à 2 minutes en gardant la page visible.
+
+   <img src="../images/installation-progression.png" alt="Installation en cours" width="420">
+
+À la fin, le bouton redémarre sur son **portail de configuration** (§3.2). S'il ne redémarre pas, débranchez-le puis rebranchez-le. Les mises à jour suivantes se font depuis Jeedom (voir §6).
 
 > Si le M5Dial n'apparaît pas dans la liste : essayez un autre câble, ou débranchez-le, maintenez le bouton situé à l'arrière, rebranchez-le puis relâchez.
 
