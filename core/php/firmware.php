@@ -3,11 +3,12 @@
  *
  * Sert le firmware.bin depose dans le plugin aux boutons M5Dial (mise a jour
  * demandee par Jeedom). Le dossier data/ n'etant pas accessible par le web,
- * le fichier passe par cette page, protegee par la cle API du plugin.
+ * le fichier passe par cette page, protegee par un jeton a usage limite
+ * (15 min) cree a chaque demande de mise a jour.
  */
 require_once dirname(__FILE__) . '/../../../../core/php/core.inc.php';
 
-if (!jeedom::apiAccess(init('apikey'), 'm5dial')) {
+if (!m5dial::jetonValide(preg_replace('/[^A-Za-z0-9]/', '', init('jeton')))) {
 	http_response_code(403);
 	echo 'Acces refuse';
 	die();

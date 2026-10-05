@@ -295,6 +295,12 @@ class m5dial extends eqLogic {
 		$liste = self::lireAppairages();
 		if (isset($liste[$_mac]) && $liste[$_mac]['code'] == $_code) {
 			if ($liste[$_mac]['etat'] == 'accepte') {
+				// Les identifiants ne sont remis qu'a l'adresse IP qui a fait la
+				// demande acceptee (meme MAC, meme code, meme IP).
+				if ($_ip != '' && isset($liste[$_mac]['ip']) && $liste[$_mac]['ip'] != '' && $liste[$_mac]['ip'] != $_ip) {
+					log::add(__CLASS__, 'warning', __('Appairage : demande acceptée mais adresse IP différente, identifiants non transmis', __FILE__) . ' (' . $_mac . ', ' . $_ip . ')');
+					return array('etat' => 'attente');
+				}
 				unset($liste[$_mac]);
 				self::ecrireAppairages($liste);
 				log::add(__CLASS__, 'info', __('Identifiants transmis au bouton', __FILE__) . ' ' . $_nom . ' (' . $_mac . ')');
@@ -524,6 +530,16 @@ class m5dial extends eqLogic {
 		return $resultat;
 	}
 
+	// Verifie et consomme un jeton de telechargement (core/php/firmware.php).
+	// Le jeton reste valable 15 min pour permettre les 3 essais du bouton.
+	public static function jetonValide($_jeton) {
+		$jetons = config::byKey('ota_jetons', __CLASS__, array());
+		if (!is_array($jetons) || $_jeton == '' || !isset($jetons[$_jeton])) {
+			return false;
+		}
+		return $jetons[$_jeton] >= time();
+	}
+
 	/* ---- Mises a jour disponibles (verification quotidienne) ---- */
 
 	// Version du firmware de la derniere release connue ("firmware-2.3" -> "2.3").
@@ -618,11 +634,25 @@ class m5dial extends eqLogic {
 		}
 		// Le dossier data/ est interdit par Apache (403) : le fichier est servi
 		// par core/php/firmware.php, protege par la cle API du plugin.
-		$url = rtrim($base, '/') . '/plugins/m5dial/core/php/firmware.php?apikey=' . jeedom::getApiKey(__CLASS__);
+		// Jeton a usage unique (valable 15 min) plutot que la cle API du plugin :
+		// le message MQTT peut etre lu par tout client du broker.
+		$jeton = config::genKey(32);
+		$jetons = config::byKey('ota_jetons', __CLASS__, array());
+		if (!is_array($jetons)) {
+			$jetons = array();
+		}
+		foreach ($jetons as $j => $expire) {
+			if ($expire < time()) {
+				unset($jetons[$j]);
+			}
+		}
+		$jetons[$jeton] = time() + 900;
+		config::save('ota_jetons', $jetons, __CLASS__);
+		$url = rtrim($base, '/') . '/plugins/m5dial/core/php/firmware.php?jeton=' . $jeton;
 		$message = json_encode(array('url' => $url, 'version' => $info['version']), JSON_UNESCAPED_SLASHES);
 		mqtt2::publish(self::TOPIC_RACINE . '/' . $this->getLogicalId() . '/ota', $message, array('retain' => false, 'qos' => 1));
 		$this->checkAndUpdateCmd('maj_etat', __('demandée', __FILE__) . ' (' . $info['version'] . ')');
-		log::add(__CLASS__, 'info', $this->getHumanName() . ' ' . __('mise à jour demandée vers', __FILE__) . ' ' . $info['version'] . ' : ' . $url);
+		log::add(__CLASS__, 'info', $this->getHumanName() . ' ' . __('mise à jour demandée vers', __FILE__) . ' ' . $info['version']);
 	}
 
 	/* ---------------------------------------------------------------- */

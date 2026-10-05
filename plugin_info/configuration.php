@@ -2,7 +2,7 @@
 /* This file is part of Jeedom - plugin M5Dial (licence AGPL). */
 require_once dirname(__FILE__) . '/../../../core/php/core.inc.php';
 include_file('core', 'authentification', 'php');
-if (!isConnect()) {
+if (!isConnect('admin')) {
 	include_file('desktop', '404', 'php');
 	die();
 }

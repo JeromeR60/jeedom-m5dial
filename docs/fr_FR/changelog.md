@@ -1,5 +1,12 @@
 # Changelog plugin M5Dial
 
+## 1.2
+
+- Sécurité : la mise à jour du firmware utilise un jeton à usage limité (15 min) au lieu de la clé API du plugin.
+- Sécurité : les identifiants d'appairage ne sont remis qu'à l'adresse IP qui a fait la demande acceptée.
+- Sécurité : page de configuration du plugin réservée aux administrateurs.
+- Documentation : section « Sécurité et données » détaillée.
+
 ## 1.1
 
 - Page d'installation web d'un M5Dial neuf (Chrome / Edge, câble USB-C), avec le firmware 2.4.

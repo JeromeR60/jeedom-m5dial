@@ -255,8 +255,27 @@ Avec l'option **Installer automatiquement les nouvelles versions**, le plugin t�
 
 ---
 
-## 9. Sécurité
+## 9. Sécurité et données
 
-- Aucun mot de passe n'est contenu dans les firmwares publiés : le Wi-Fi est saisi dans le portail du bouton, les identifiants MQTT et OTA sont transmis par Jeedom lors de l'appairage et stockés dans la mémoire du bouton.
-- L'appairage demande une validation manuelle dans Jeedom, avec vérification du code affiché.
-- Le bouton n'accepte que les mises à jour téléchargées depuis l'adresse de Jeedom qu'il connaît.
+**Ce que le plugin transmet et conserve**
+
+- Le **mot de passe Wi-Fi** est saisi dans le portail du bouton et reste uniquement dans le bouton.
+- Lors de l'appairage, Jeedom transmet au bouton l'**utilisateur et le mot de passe MQTT** (repris de MQTT Manager) et le **mot de passe des mises à jour**. Ils sont stockés dans la mémoire du bouton.
+- Cette transmission se fait en **HTTP sur votre réseau local** (le bouton ne gère pas le HTTPS). Elle n'a lieu qu'une fois, après votre validation.
+- Le plugin conserve pour chaque bouton : son nom, son adresse MAC, son adresse IP, son réseau Wi-Fi (SSID) et sa version. Aucune donnée n'est envoyée en dehors de votre réseau, à part la consultation de la dernière version publiée sur GitHub.
+
+**Protections**
+
+- Aucun mot de passe n'est contenu dans les firmwares publiés.
+- L'appairage demande une **validation manuelle** dans Jeedom, avec vérification du code à 4 chiffres affiché sur le bouton. Les identifiants ne sont remis qu'au bouton qui a fait la demande (même adresse MAC, même code, même adresse IP).
+- Les mises à jour du firmware utilisent un **jeton à usage limité** (15 minutes), créé à chaque demande. Le bouton n'accepte que les mises à jour venant de l'adresse de Jeedom qu'il connaît.
+- Les pages de configuration du plugin sont réservées aux administrateurs Jeedom.
+
+**Conseils**
+
+- Placez les boutons sur un réseau Wi-Fi de confiance (idéalement un réseau dédié aux objets connectés).
+- Utilisez un utilisateur MQTT dédié aux boutons.
+
+---
+
+Plugin indépendant, **non affilié à M5Stack**. M5Stack et M5Dial sont des marques de leurs propriétaires respectifs.
