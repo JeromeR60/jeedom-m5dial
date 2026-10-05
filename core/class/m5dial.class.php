@@ -659,6 +659,12 @@ class m5dial extends eqLogic {
 	/* Cycle de vie de l'equipement                                      */
 	/* ---------------------------------------------------------------- */
 
+	// Image des vignettes : le bouton rond (l'icone du plugin, au format du
+	// Market, est reservee a la liste des plugins).
+	public function getImage() {
+		return 'plugins/m5dial/desktop/images/bouton.png';
+	}
+
 	public function preSave() {
 		if ($this->getLogicalId() != '') {
 			$autre = self::byLogicalId($this->getLogicalId(), __CLASS__);
