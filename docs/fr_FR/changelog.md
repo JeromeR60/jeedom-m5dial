@@ -1,5 +1,9 @@
 # Changelog plugin M5Dial
 
+## 1.0.1
+
+- Documentation : nouvelles captures (configuration, fonctionnalités, firmware).
+
 ## 1.0
 
 - Un bouton déjà connu (même adresse MAC) qui revient sous un autre nom, après une réinitialisation ou un réappairage, retrouve automatiquement son équipement et sa configuration.

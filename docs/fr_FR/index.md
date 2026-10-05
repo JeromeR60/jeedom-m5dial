@@ -53,6 +53,12 @@ Toute la communication passe par **MQTT**.
 - **Installer automatiquement les nouvelles versions** (décoché par défaut) : chaque nuit, le plugin vérifie la dernière version publiée. Il vous prévient toujours ; si la case est cochée, il installe aussi la nouvelle version sur les boutons en ligne.
 - **Mode avancé (développeur)** : affiche le bouton « Déposer un firmware.bin » pour installer un firmware compilé soi-même.
 
+### Section « Fonctionnalités »
+
+La vérification des nouvelles versions est lancée chaque nuit par la tâche **cronDaily**. Vérifiez qu'elle est sur **Oui** et que la case **Activer** est cochée.
+
+![Fonctionnalités du plugin](../images/fonctionnalites.png)
+
 ---
 
 ## 3. Premier démarrage d'un bouton
@@ -188,6 +194,10 @@ Sur la page du plugin, section **Firmware des boutons** :
 - ou, en **mode avancé** uniquement, **Déposer un firmware.bin** : envoie un fichier que vous avez compilé avec PlatformIO.
 
 ![Firmware des boutons](../images/firmware.png)
+
+En mode avancé, le bouton **Déposer un firmware.bin** apparaît à côté :
+
+![Firmware des boutons en mode avancé](../images/firmware-avance.png)
 
 La ligne **Firmware disponible pour les mises à jour** affiche la version, la taille et la date du fichier présent dans Jeedom.
 
