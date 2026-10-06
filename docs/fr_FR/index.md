@@ -179,6 +179,8 @@ Les informations sont rafraîchies toutes les 5 minutes et à chaque reconnexion
 
 Cochez les écrans à afficher sur le bouton, puis choisissez les commandes Jeedom avec le sélecteur de commandes.
 
+**Ordre du menu** : le cadre **Menu du bouton**, en haut de l'onglet, liste les écrans cochés. Les flèches ▲▼ changent leur ordre sur le bouton ; le premier est affiché au démarrage. **Réglages** reste toujours en dernier. (Firmware 2.6 ou plus.)
+
 ![Onglet Écrans du bouton](../images/ecrans.png)
 
 | Écran | Ce qu'on configure |
@@ -189,6 +191,7 @@ Cochez les écrans à afficher sur le bouton, puis choisissez les commandes Jeed
 | **Actions groupées** | tout allumer / éteindre, ouvrir / fermer tous les volets ou par étage, heure de fermeture automatique |
 | **Chauffage** | température ambiante, consigne (info, curseur, mini, maxi, pas), modes Confort / Nuit / Vacances / Off, statut de chauffe, puissance, température extérieure |
 | **Capteurs** | une ligne par pièce : nom, température, humidité |
+| **Météo** | température, et en option humidité, icône de la condition, min / max, lever et coucher du soleil (voir §5.2) |
 | **Badges RFID** | commande message appelée quand un badge est passé, commande pour enregistrer un nouveau badge, et info qui renvoie le résultat à afficher (voir l'exemple complet au §5.1) |
 
 > Écrivez les noms affichés **sans accents** : la police du bouton ne les contient pas.
@@ -264,6 +267,22 @@ Section **Badges RFID** :
 Pour ajouter un badge : sur le bouton, menu **Badges → Ajouter badge**, puis présentez le badge. Renommez-le ensuite dans la variable `badges_m5dial`.
 
 Vous pouvez bien sûr adapter les scénarios : ouvrir une serrure, désarmer une alarme, prévenir sur le téléphone, etc. Le bouton se contente d'envoyer l'UID et d'afficher le texte de **Dernier changement**.
+
+### 5.2 Écran Météo
+
+L'écran Météo affiche une **icône de la condition** (soleil, nuages, pluie, neige, orage…, avec une version de nuit), la **température**, l'**humidité** et une ligne **min / max**. Firmware 2.6 ou plus.
+
+Chaque valeur se choisit avec le sélecteur de commandes : vous pouvez mélanger les sources.
+
+| Champ | Avec le plugin Météo officiel | Autre possibilité |
+| --- | --- | --- |
+| Température (obligatoire) | Température | sonde extérieure (Zigbee, Z-Wave…) |
+| Humidité | Humidité | sonde extérieure |
+| Numéro condition | Numéro condition | — (sans ce champ : pas d'icône, le titre « Exterieur » s'affiche) |
+| Température min / max | Température Min / Max | toute commande info (ex. statistiques d'un virtuel) |
+| Lever / coucher du soleil | Lever du soleil / Coucher du soleil (format HHMM, ex. 758) | — (sans ces champs : icône de jour en permanence) |
+
+Le bouton prend l'heure sur Internet (NTP, heure de Paris) pour choisir l'icône de jour ou de nuit. Les codes de condition reconnus sont ceux du plugin Météo de Jeedom ; un code inconnu affiche l'icône « nuageux ».
 
 ---
 

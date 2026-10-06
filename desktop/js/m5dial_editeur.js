@@ -98,6 +98,18 @@ var M5DIAL_SECTIONS = [
     ]
   },
   {
+    cle: 'meteo', titre: '{{Météo}}', icone: 'fas fa-cloud-sun', liste: false,
+    champs: [
+      { c: 'temperatureInfo', l: '{{Température}}', t: 'info', d: '{{Plugin Météo ou sonde extérieure}}' },
+      { c: 'humiditeInfo', l: '{{Humidité}}', t: 'info', d: '{{Facultatif}}' },
+      { c: 'conditionInfo', l: '{{Numéro condition}}', t: 'info', d: '{{Facultatif : code de condition du plugin Météo (ex. 1000 = ensoleillé), pour l\'icône}}' },
+      { c: 'minInfo', l: '{{Température min}}', t: 'info', d: '{{Facultatif}}' },
+      { c: 'maxInfo', l: '{{Température max}}', t: 'info', d: '{{Facultatif}}' },
+      { c: 'leverInfo', l: '{{Lever du soleil}}', t: 'info', d: '{{Facultatif, format HHMM (ex. 758) : icône de nuit (lune) entre le coucher et le lever}}' },
+      { c: 'coucherInfo', l: '{{Coucher du soleil}}', t: 'info', d: '{{Facultatif, format HHMM (ex. 1919)}}' }
+    ]
+  },
+  {
     cle: 'badges', titre: '{{Badges RFID}}', icone: 'fas fa-id-card', liste: false,
     champs: [
       { c: 'setUid', l: '{{Badge passé (message)}}', t: 'action', d: '{{Action message du virtuel Badges (UID lu)}}' },
@@ -108,6 +120,51 @@ var M5DIAL_SECTIONS = [
 ]
 
 var m5dialConfig = {}
+
+/* Entrees du menu d'accueil du bouton (Reglages est toujours en dernier). */
+var M5DIAL_MENU = [
+  { cle: 'presence', l: '{{Présence}}' },
+  { cle: 'lumieres', l: '{{Lumières}}' },
+  { cle: 'volets', l: '{{Volets}}' },
+  { cle: 'chauffage', l: '{{Chauffage}}' },
+  { cle: 'capteurs', l: '{{Capteurs}}' },
+  { cle: 'meteo', l: '{{Météo}}' },
+  { cle: 'badges', l: '{{Badges RFID}}' }
+]
+
+// Ordre actuel des ecrans actifs : d'abord la liste "menu", puis les autres
+// ecrans actifs dans l'ordre par defaut.
+function m5dialOrdreMenu() {
+  var actifs = M5DIAL_MENU.filter(function (m) { return m5dialConfig[m.cle] !== undefined }).map(function (m) { return m.cle })
+  var ordre = []
+  ;(Array.isArray(m5dialConfig.menu) ? m5dialConfig.menu : []).forEach(function (c) {
+    if (actifs.indexOf(c) >= 0 && ordre.indexOf(c) < 0) ordre.push(c)
+  })
+  actifs.forEach(function (c) { if (ordre.indexOf(c) < 0) ordre.push(c) })
+  return ordre
+}
+
+function m5dialHtmlMenu() {
+  var ordre = m5dialOrdreMenu()
+  var html = '<div class="panel panel-primary"><div class="panel-heading"><i class="fas fa-bars"></i> {{Menu du bouton}}'
+  html += ' <sup><i class="fas fa-question-circle tooltips" title="{{Ordre des écrans sur le bouton (le premier est affiché au démarrage). Réglages est toujours en dernier.}}"></i></sup></div>'
+  html += '<div class="panel-body">'
+  if (ordre.length === 0) {
+    html += '<div class="text-muted">{{Cochez au moins un écran ci-dessous}}</div>'
+  }
+  ordre.forEach(function (c, i) {
+    var m = M5DIAL_MENU.find(function (x) { return x.cle === c })
+    html += '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">'
+    html += '<span class="label label-default" style="min-width:22px;">' + (i + 1) + '</span>'
+    html += '<span style="min-width:130px;">' + m.l + '</span>'
+    html += '<a class="btn btn-xs btn-default m5dialMenuDeplacer" data-index="' + i + '" data-sens="-1"' + (i === 0 ? ' disabled' : '') + ' title="{{Monter}}"><i class="fas fa-arrow-up"></i></a>'
+    html += '<a class="btn btn-xs btn-default m5dialMenuDeplacer" data-index="' + i + '" data-sens="1"' + (i === ordre.length - 1 ? ' disabled' : '') + ' title="{{Descendre}}"><i class="fas fa-arrow-down"></i></a>'
+    html += '</div>'
+  })
+  html += '<div style="display:flex;align-items:center;gap:6px;opacity:0.6;"><span class="label label-default" style="min-width:22px;">' + (ordre.length + 1) + '</span><span>{{Réglages}}</span></div>'
+  html += '</div></div>'
+  return html
+}
 
 /* ------------------------------------------------------------------ */
 /* Acces aux valeurs par chemin                                        */
@@ -227,7 +284,7 @@ function m5dialAfficher() {
   }
   m5dialConfig = conf
   $('#div_m5dialEditeur').show()
-  var html = ''
+  var html = m5dialHtmlMenu()
   M5DIAL_SECTIONS.forEach(function (s) {
     var active = (m5dialConfig[s.cle] !== undefined)
     html += '<div class="panel panel-default">'
@@ -378,6 +435,20 @@ $('#div_m5dialEditeur').off('click', '.m5dialMonter').on('click', '.m5dialMonter
   var tmp = liste[i - 1]
   liste[i - 1] = liste[i]
   liste[i] = tmp
+  m5dialEcrireJson()
+  m5dialAfficher()
+})
+
+$('#div_m5dialEditeur').off('click', '.m5dialMenuDeplacer').on('click', '.m5dialMenuDeplacer', function () {
+  if ($(this).attr('disabled')) return
+  var ordre = m5dialOrdreMenu()
+  var i = parseInt($(this).attr('data-index'))
+  var j = i + parseInt($(this).attr('data-sens'))
+  if (j < 0 || j >= ordre.length) return
+  var tmp = ordre[j]
+  ordre[j] = ordre[i]
+  ordre[i] = tmp
+  m5dialConfig.menu = ordre
   m5dialEcrireJson()
   m5dialAfficher()
 })

@@ -1,5 +1,10 @@
 # Changelog plugin M5Dial
 
+## 1.4
+
+- Nouvel écran **Météo** dans l'éditeur : température, humidité, icône de la condition (jour / nuit), min / max. Chaque champ peut venir du plugin Météo ou d'une sonde extérieure. Nécessite le firmware 2.6.
+- Nouveau cadre **Menu du bouton** : choix de l'ordre des écrans sur le bouton (flèches). Nécessite le firmware 2.6.
+
 ## 1.3.2
 
 - Documentation : exemple complet badges RFID et présence (virtuel, variable, scénarios).
