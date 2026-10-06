@@ -3,7 +3,7 @@
 ## 1.5
 
 - Écran Météo : prévisions de demain et après-demain (condition, min, max), affichées en tournant la molette. Nécessite le firmware 2.7.
-- La version du plugin est affichée sur la page du plugin (une installation depuis GitHub n'affiche que le numéro de commit dans Jeedom).
+- La version du plugin est affichée dans la configuration du plugin (une installation depuis GitHub n'affiche que le numéro de commit dans Jeedom).
 
 ## 1.4
 

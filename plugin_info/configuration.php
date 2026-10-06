@@ -10,6 +10,16 @@ if (!isConnect('admin')) {
 <form class="form-horizontal">
 	<fieldset>
 		<legend><i class="fas fa-info-circle"></i> {{Général}}</legend>
+		<?php
+		$m5dialInfo = json_decode(file_get_contents(__DIR__ . '/info.json'), true);
+		$m5dialVersion = (is_array($m5dialInfo) && isset($m5dialInfo['pluginVersion'])) ? $m5dialInfo['pluginVersion'] : '?';
+		?>
+		<div class="form-group">
+			<label class="col-md-4 control-label">{{Version du plugin}}</label>
+			<div class="col-md-4">
+				<span class="label label-success">v<?php echo htmlspecialchars($m5dialVersion); ?></span>
+			</div>
+		</div>
 		<div class="form-group">
 			<label class="col-md-4 control-label">{{Topic racine des boutons}}
 				<sup><i class="fas fa-question-circle tooltips" title="{{Les boutons publient sur m5dial/<nom>/status et m5dial/<nom>/info, et reçoivent leur configuration sur m5dial/<nom>/config}}"></i></sup>

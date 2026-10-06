@@ -33,13 +33,7 @@ $eqLogics = eqLogic::byType($plugin->getId());
 				<tbody id="tb_m5dialAppairages"></tbody>
 			</table>
 		</div>
-		<?php
-		$m5dialInfo = json_decode(file_get_contents(__DIR__ . '/../../plugin_info/info.json'), true);
-		$m5dialVersion = (is_array($m5dialInfo) && isset($m5dialInfo['pluginVersion'])) ? $m5dialInfo['pluginVersion'] : '?';
-		?>
-		<legend><i class="fas fa-microchip"></i> {{Firmware des boutons}}
-			<span class="label label-default pull-right" style="font-size:0.7em;margin-top:6px;" title="{{Version du plugin installée}}">{{Plugin}} v<?php echo htmlspecialchars($m5dialVersion); ?></span>
-		</legend>
+		<legend><i class="fas fa-microchip"></i> {{Firmware des boutons}}</legend>
 		<div class="form-horizontal" style="margin-left:10px;">
 			<div class="form-group">
 				<label class="col-sm-3 control-label">{{Firmware disponible pour les mises à jour}}</label>
