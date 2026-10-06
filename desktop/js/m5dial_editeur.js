@@ -106,7 +106,13 @@ var M5DIAL_SECTIONS = [
       { c: 'minInfo', l: '{{Température min}}', t: 'info', d: '{{Facultatif}}' },
       { c: 'maxInfo', l: '{{Température max}}', t: 'info', d: '{{Facultatif}}' },
       { c: 'leverInfo', l: '{{Lever du soleil}}', t: 'info', d: '{{Facultatif, format HHMM (ex. 758) : icône de nuit (lune) entre le coucher et le lever}}' },
-      { c: 'coucherInfo', l: '{{Coucher du soleil}}', t: 'info', d: '{{Facultatif, format HHMM (ex. 1919)}}' }
+      { c: 'coucherInfo', l: '{{Coucher du soleil}}', t: 'info', d: '{{Facultatif, format HHMM (ex. 1919)}}' },
+      { c: 'previsions.0.conditionInfo', l: '{{Demain : numéro condition}}', t: 'info', d: '{{Facultatif : prévisions affichées en tournant la molette sur l\'écran Météo (plugin Météo : Numéro condition +1)}}' },
+      { c: 'previsions.0.minInfo', l: '{{Demain : température min}}', t: 'info', d: '{{Facultatif (plugin Météo : Température Min +1)}}' },
+      { c: 'previsions.0.maxInfo', l: '{{Demain : température max}}', t: 'info', d: '{{Facultatif (plugin Météo : Température Max +1)}}' },
+      { c: 'previsions.1.conditionInfo', l: '{{Après-demain : numéro condition}}', t: 'info', d: '{{Facultatif (plugin Météo : Numéro condition +2)}}' },
+      { c: 'previsions.1.minInfo', l: '{{Après-demain : température min}}', t: 'info', d: '{{Facultatif (plugin Météo : Température Min +2)}}' },
+      { c: 'previsions.1.maxInfo', l: '{{Après-demain : température max}}', t: 'info', d: '{{Facultatif (plugin Météo : Température Max +2)}}' }
     ]
   },
   {

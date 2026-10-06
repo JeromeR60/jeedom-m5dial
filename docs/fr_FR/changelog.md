@@ -1,5 +1,10 @@
 # Changelog plugin M5Dial
 
+## 1.5
+
+- Écran Météo : prévisions de demain et après-demain (condition, min, max), affichées en tournant la molette. Nécessite le firmware 2.7.
+- La version du plugin est affichée sur la page du plugin (une installation depuis GitHub n'affiche que le numéro de commit dans Jeedom).
+
 ## 1.4
 
 - Nouvel écran **Météo** dans l'éditeur : température, humidité, icône de la condition (jour / nuit), min / max. Chaque champ peut venir du plugin Météo ou d'une sonde extérieure. Nécessite le firmware 2.6.

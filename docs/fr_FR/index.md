@@ -282,6 +282,8 @@ Chaque valeur se choisit avec le sélecteur de commandes : vous pouvez mélanger
 | Température min / max | Température Min / Max | toute commande info (ex. statistiques d'un virtuel) |
 | Lever / coucher du soleil | Lever du soleil / Coucher du soleil (format HHMM, ex. 758) | — (sans ces champs : icône de jour en permanence) |
 
+**Prévisions** : en option, renseignez aussi « Demain » et « Après-demain » (numéro de condition, min, max ; dans le plugin Météo : *Numéro condition +1*, *Température Min +1*, *Température Max +1*, puis *+2*). Sur le bouton, **tournez la molette** (ou glissez du doigt) sur l'écran Météo pour passer de maintenant à demain puis après-demain ; des points en bas indiquent la page. Firmware 2.7 ou plus.
+
 Le bouton prend l'heure sur Internet (NTP, heure de Paris) pour choisir l'icône de jour ou de nuit. Les codes de condition reconnus sont ceux du plugin Météo de Jeedom ; un code inconnu affiche l'icône « nuageux ».
 
 ---

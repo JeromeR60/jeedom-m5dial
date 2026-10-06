@@ -1,7 +1,7 @@
 {
 	"id": "m5dial",
 	"name": "M5Dial",
-	"pluginVersion": "1.4",
+	"pluginVersion": "1.5",
 	"documentation": "https://github.com/JeromeR60/jeedom-m5dial/blob/main/docs/fr_FR/index.md",
 	"changelog": "https://github.com/JeromeR60/jeedom-m5dial/blob/main/docs/fr_FR/changelog.md",
 	"description": {
