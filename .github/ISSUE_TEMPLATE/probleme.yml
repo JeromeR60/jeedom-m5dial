@@ -1,0 +1,73 @@
+name: Signaler un problème
+description: Un bug, un bouton qui ne réagit pas, une installation qui bloque…
+labels: ["bug"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Merci de prendre le temps de signaler ce problème !
+        ⚠️ **Avant d'envoyer un log ou une capture, vérifiez qu'aucun mot de passe n'y figure.**
+  - type: textarea
+    id: description
+    attributes:
+      label: Que se passe-t-il ?
+      description: Décrivez le problème et ce que vous attendiez.
+    validations:
+      required: true
+  - type: textarea
+    id: etapes
+    attributes:
+      label: Comment le reproduire ?
+      placeholder: |
+        1. Aller sur…
+        2. Cliquer sur…
+        3. Le bouton affiche…
+  - type: dropdown
+    id: etape
+    attributes:
+      label: À quelle étape ?
+      options:
+        - Installation du plugin
+        - Installation du firmware (page web ou M5Burner)
+        - Portail Wi-Fi du bouton
+        - Appairage
+        - Configuration des écrans
+        - Utilisation au quotidien
+        - Mise à jour du firmware
+        - Autre
+    validations:
+      required: true
+  - type: input
+    id: version_plugin
+    attributes:
+      label: Version du plugin
+      description: Indiquée dans la configuration du plugin.
+      placeholder: "1.5"
+    validations:
+      required: true
+  - type: input
+    id: version_firmware
+    attributes:
+      label: Version du firmware
+      description: Affichée sur la vignette de l'équipement.
+      placeholder: "2.7"
+  - type: input
+    id: jeedom
+    attributes:
+      label: Version de Jeedom et matériel
+      placeholder: "4.4.x, Debian 12, Atlas / NUC / Raspberry…"
+  - type: input
+    id: wifi
+    attributes:
+      label: Modèle de borne / box Wi-Fi
+  - type: textarea
+    id: log
+    attributes:
+      label: Log du plugin
+      description: Analyse → Logs → m5dial (en niveau Debug si possible). Collez les lignes utiles.
+      render: text
+  - type: textarea
+    id: captures
+    attributes:
+      label: Photos ou captures
+      description: Photo de l'écran du bouton, capture de Jeedom… (glissez les images ici)
