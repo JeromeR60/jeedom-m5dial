@@ -5,7 +5,7 @@ Le plugin **M5Dial** permet d'utiliser des boutons **M5Stack M5Dial** (écran ro
 Depuis Jeedom, vous pouvez :
 
 - **superviser** chaque bouton (en ligne, version, signal Wi-Fi, mémoire…) ;
-- **configurer ses écrans** (lumières, volets, chauffage, présence, capteurs, badges RFID) sans recompiler le firmware ;
+- **configurer ses écrans** (lumières, volets, chauffage, présence, capteurs, météo, badges RFID) sans recompiler le firmware ;
 - **appairer** un nouveau bouton en quelques secondes, sans mot de passe à saisir ;
 - **mettre à jour le firmware** de tous les boutons, depuis Jeedom ou directement depuis GitHub.
 
@@ -22,7 +22,7 @@ Toute la communication passe par **MQTT**.
 | Jeedom | 4.4 ou plus, Debian 11 ou plus |
 | Plugin **MQTT Manager** (mqtt2) | installé, configuré et **démarré** : il fournit le broker et la connexion |
 | Utilisateur MQTT | au moins un utilisateur déclaré dans MQTT Manager (champ *Authentification*, format `utilisateur:motdepasse`) |
-| Bouton M5Dial | M5Stack Dial v1.1 avec le firmware M5Dial (2.2 ou plus pour l'appairage, 2.3 ou plus conseillé) |
+| Bouton M5Dial | M5Stack Dial v1.1 avec le firmware M5Dial (dernière version conseillée, installée depuis la page d'installation web, §3.1) |
 | Wi-Fi | réseau **2,4 GHz**. Sur les bornes Wi-Fi 6 (802.11ax), activez si possible le mode de compatibilité Wi-Fi 5 sur la radio 2,4 GHz : en Wi-Fi 6 pur, le bouton peut perdre beaucoup de paquets (commandes lentes, déconnexions MQTT) |
 
 > Conseil : réservez une adresse IP fixe (bail DHCP) pour chaque bouton sur votre box ou routeur.
@@ -31,8 +31,24 @@ Toute la communication passe par **MQTT**.
 
 ## 2. Installation et configuration du plugin
 
-1. Installez le plugin (dépôt GitHub `JeromeR60/jeedom-m5dial`, branche `main`), puis **activez-le**.
-2. Ouvrez **Plugins → Gestion des plugins → M5Dial → Configuration**.
+Le plugin s'installe depuis GitHub (il n'est pas encore sur le Market Jeedom).
+
+1. **Autorisez GitHub comme source** (une seule fois) : **Réglages → Système → Configuration** → onglet **Mises à jour/Market** → sous-onglet **GitHub** : cochez **Activer GitHub**, puis **Sauvegarder**. Le jeton (token) n'est pas nécessaire.
+2. **Ajoutez le plugin** : **Plugins → Gestion des plugins** → bouton **+** (Ajouter un plugin) → type de source **GitHub** :
+
+   | Champ | Valeur |
+   | --- | --- |
+   | ID logique du plugin | `m5dial` |
+   | Utilisateur ou organisation du dépôt | `JeromeR60` |
+   | Nom du dépôt | `jeedom-m5dial` |
+   | Branche | `main` |
+
+   **Enregistrez**, puis **activez** le plugin.
+3. Les nouvelles versions arrivent par la mise à jour habituelle des plugins (**Réglages → Système → Centre de mise à jour**). Pour une installation depuis GitHub, Jeedom affiche un numéro de commit au lieu de la version : la version du plugin est indiquée dans sa configuration.
+
+> La branche `beta` reçoit les nouveautés en avant-première (voir le [guide du bêta-testeur](beta-testeurs.md)). Pour un usage normal, restez sur `main`.
+
+4. Ouvrez **Plugins → Gestion des plugins → M5Dial → Configuration**.
 
 ### Section « Général »
 
