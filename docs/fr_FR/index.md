@@ -5,7 +5,7 @@ Le plugin **M5Dial** permet d'utiliser des boutons **M5Stack M5Dial** (écran ro
 Depuis Jeedom, vous pouvez :
 
 - **superviser** chaque bouton (en ligne, version, signal Wi-Fi, mémoire…) ;
-- **configurer ses écrans** (lumières, volets, chauffage, présence, capteurs, météo, badges RFID) sans recompiler le firmware ;
+- **configurer ses écrans** (lumières, volets, chauffage, présence, capteurs, météo, distributeurs, badges RFID) sans recompiler le firmware ;
 - **appairer** un nouveau bouton en quelques secondes, sans mot de passe à saisir ;
 - **mettre à jour le firmware** de tous les boutons, depuis Jeedom ou directement depuis GitHub.
 
@@ -304,6 +304,20 @@ Chaque valeur se choisit avec le sélecteur de commandes : vous pouvez mélanger
 **Prévisions** : en option, renseignez aussi « Demain » et « Après-demain » (numéro de condition, min, max ; dans le plugin Météo : *Numéro condition +1*, *Température Min +1*, *Température Max +1*, puis *+2*). Sur le bouton, **tournez la molette** (ou glissez du doigt) sur l'écran Météo pour passer de maintenant à demain puis après-demain ; des points en bas indiquent la page. Firmware 2.7 ou plus.
 
 Le bouton prend l'heure sur Internet (NTP, heure de Paris) pour choisir l'icône de jour ou de nuit. Les codes de condition reconnus sont ceux du plugin Météo de Jeedom ; un code inconnu affiche l'icône « nuageux ».
+
+### 5.3 Écran Distributeur
+
+Pour un distributeur de croquettes (ou tout appareil qui distribue un nombre de doses), firmware 2.8 ou plus. Ajoutez un distributeur par appareil dans la section **Distributeurs** :
+
+| Champ | Rôle |
+| --- | --- |
+| Nom affiché | nom sur l'écran (sans accent) |
+| Distribuer (curseur) | commande **action curseur** qui reçoit le nombre de doses et lance la distribution |
+| Dose mini / maxi | plage de la molette (1 à 12 par défaut) |
+| Dernière dose (info) | facultatif : affichée sous la dose choisie |
+| Connexion (info binaire) | facultatif : 1 = connecté. Si l'appareil est hors ligne, le bouton affiche « Hors ligne » et refuse de distribuer |
+
+Sur le bouton : **tournez la molette** pour choisir le nombre de doses, puis **appuyez** (bouton ou tap sur l'écran) pour distribuer ; « Distribue ! » confirme l'envoi. Avec plusieurs distributeurs, **glissez du doigt** pour passer de l'un à l'autre. Appui long ou icône retour : accueil.
 
 ---
 

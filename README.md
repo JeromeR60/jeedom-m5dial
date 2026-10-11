@@ -7,7 +7,7 @@ Plugin Jeedom et firmware qui transforment un **M5Stack Dial** (écran rond, mol
 ## Fonctions
 
 - Lumières (on/off, intensité, blanc, couleur), volets, chauffage, modes de présence
-- Badges RFID, capteurs (température, humidité), météo avec prévisions sur deux jours
+- Badges RFID, capteurs (température, humidité), météo avec prévisions sur deux jours, distributeurs de croquettes
 - Écrans configurés depuis Jeedom, sans recompiler le firmware
 - Appairage d'un nouveau bouton en quelques secondes, sans mot de passe à saisir
 - Mises à jour du firmware par Wi-Fi depuis Jeedom (notification des nouvelles versions)

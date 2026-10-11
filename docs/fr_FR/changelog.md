@@ -1,5 +1,9 @@
 # Changelog plugin M5Dial
 
+## 1.6
+
+- Nouvel écran **Distributeur** (croquettes…) : choix du nombre de doses à la molette, distribution d'un appui, dernière dose et état de connexion. Nécessite le firmware 2.8.
+
 ## 1.5
 
 - Écran Météo : prévisions de demain et après-demain (condition, min, max), affichées en tournant la molette. Nécessite le firmware 2.7.

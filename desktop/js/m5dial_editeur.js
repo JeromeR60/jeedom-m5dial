@@ -116,6 +116,17 @@ var M5DIAL_SECTIONS = [
     ]
   },
   {
+    cle: 'distributeurs', titre: '{{Distributeurs}}', icone: 'fas fa-paw', liste: true, ajout: '{{Ajouter un distributeur}}',
+    champs: [
+      { c: 'nom', l: '{{Nom affiché}}', t: 'texte', d: '{{Sans accent (police du bouton)}}' },
+      { c: 'doseAction', l: '{{Distribuer (curseur)}}', t: 'action', d: '{{Action curseur qui reçoit le nombre de doses}}' },
+      { c: 'doseRange.0', l: '{{Dose mini}}', t: 'nombre', d: '{{1 par défaut}}' },
+      { c: 'doseRange.1', l: '{{Dose maxi}}', t: 'nombre', d: '{{12 par défaut}}' },
+      { c: 'derniereDoseInfo', l: '{{Dernière dose (info)}}', t: 'info', d: '{{Facultatif}}' },
+      { c: 'connexionInfo', l: '{{Connexion (info binaire)}}', t: 'info', d: '{{Facultatif : 1 = connecté. Hors ligne, la distribution est bloquée sur le bouton}}' }
+    ]
+  },
+  {
     cle: 'badges', titre: '{{Badges RFID}}', icone: 'fas fa-id-card', liste: false,
     champs: [
       { c: 'setUid', l: '{{Badge passé (message)}}', t: 'action', d: '{{Action message du virtuel Badges (UID lu)}}' },
@@ -135,6 +146,7 @@ var M5DIAL_MENU = [
   { cle: 'chauffage', l: '{{Chauffage}}' },
   { cle: 'capteurs', l: '{{Capteurs}}' },
   { cle: 'meteo', l: '{{Météo}}' },
+  { cle: 'distributeurs', l: '{{Distributeurs}}' },
   { cle: 'badges', l: '{{Badges RFID}}' }
 ]
 
