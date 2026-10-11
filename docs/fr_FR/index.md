@@ -52,6 +52,7 @@ Le plugin s'installe depuis GitHub (il n'est pas encore sur le Market Jeedom).
 
 ### Section « Général »
 
+- **Version du plugin** : version installée (Jeedom n'affiche qu'un numéro de commit pour une installation depuis GitHub).
 - **Topic racine des boutons** : `m5dial`. Les boutons publient sur `m5dial/<nom>/status` et `m5dial/<nom>/info` et reçoivent leur configuration sur `m5dial/<nom>/config`.
 - Le plugin s'abonne automatiquement à ce topic auprès de MQTT Manager.
 
@@ -196,6 +197,8 @@ Les informations sont rafraîchies toutes les 5 minutes et à chaque reconnexion
 Cochez les écrans à afficher sur le bouton, puis choisissez les commandes Jeedom avec le sélecteur de commandes.
 
 **Ordre du menu** : le cadre **Menu du bouton**, en haut de l'onglet, liste les écrans cochés. Les flèches ▲▼ changent leur ordre sur le bouton ; le premier est affiché au démarrage. **Réglages** reste toujours en dernier. (Firmware 2.6 ou plus.)
+
+![Menu du bouton](../images/menu-bouton.png)
 
 ![Onglet Écrans du bouton](../images/ecrans.png)
 
