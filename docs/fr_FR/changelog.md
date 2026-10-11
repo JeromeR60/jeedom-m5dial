@@ -2,7 +2,7 @@
 
 ## 1.6
 
-- Nouvel écran **Distributeur** (croquettes…) : choix du nombre de doses à la molette, distribution d'un appui, dernière dose et état de connexion. Nécessite le firmware 2.8.
+- Nouvel écran **Distributeur** (croquettes…) : choix du nombre de doses à la molette, distribution d'un appui, état de connexion (distribution bloquée hors ligne). Nécessite le firmware 2.8.
 
 ## 1.5
 

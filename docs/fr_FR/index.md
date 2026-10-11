@@ -314,7 +314,6 @@ Pour un distributeur de croquettes (ou tout appareil qui distribue un nombre de 
 | Nom affiché | nom sur l'écran (sans accent) |
 | Distribuer (curseur) | commande **action curseur** qui reçoit le nombre de doses et lance la distribution |
 | Dose mini / maxi | plage de la molette (1 à 12 par défaut) |
-| Dernière dose (info) | facultatif : affichée sous la dose choisie |
 | Connexion (info binaire) | facultatif : 1 = connecté. Si l'appareil est hors ligne, le bouton affiche « Hors ligne » et refuse de distribuer |
 
 Sur le bouton : **tournez la molette** pour choisir le nombre de doses, puis **appuyez** (bouton ou tap sur l'écran) pour distribuer ; « Distribue ! » confirme l'envoi. Avec plusieurs distributeurs, **glissez du doigt** pour passer de l'un à l'autre. Appui long ou icône retour : accueil.

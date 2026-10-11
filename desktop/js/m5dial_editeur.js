@@ -122,7 +122,6 @@ var M5DIAL_SECTIONS = [
       { c: 'doseAction', l: '{{Distribuer (curseur)}}', t: 'action', d: '{{Action curseur qui reçoit le nombre de doses}}' },
       { c: 'doseRange.0', l: '{{Dose mini}}', t: 'nombre', d: '{{1 par défaut}}' },
       { c: 'doseRange.1', l: '{{Dose maxi}}', t: 'nombre', d: '{{12 par défaut}}' },
-      { c: 'derniereDoseInfo', l: '{{Dernière dose (info)}}', t: 'info', d: '{{Facultatif}}' },
       { c: 'connexionInfo', l: '{{Connexion (info binaire)}}', t: 'info', d: '{{Facultatif : 1 = connecté. Hors ligne, la distribution est bloquée sur le bouton}}' }
     ]
   },
