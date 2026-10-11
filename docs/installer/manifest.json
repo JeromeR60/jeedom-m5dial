@@ -1,6 +1,6 @@
 {
     "name":  "M5Dial pour Jeedom",
-    "version":  "2.7",
+    "version":  "2.8",
     "new_install_prompt_erase":  true,
     "builds":  [
                    {
