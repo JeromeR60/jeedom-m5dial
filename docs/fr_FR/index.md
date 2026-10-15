@@ -27,6 +27,10 @@ Toute la communication passe par **MQTT**.
 
 > Conseil : réservez une adresse IP fixe (bail DHCP) pour chaque bouton sur votre box ou routeur.
 
+**Configuration de MQTT Manager** (Plugins → Programmation → MQTT Manager) : le mode **Broker local** convient, l'état du broker doit être **OK** et le démon démarré. Dans **Authentification**, ajoutez une ligne pour les boutons, par exemple `m5dial:unMotDePasseSolide` (une ligne par utilisateur, format `utilisateur:motdepasse`), puis **Sauvegardez**. Ce mot de passe est transmis automatiquement aux boutons lors de l'appairage : vous n'avez jamais à le saisir sur le bouton.
+
+![Configuration de MQTT Manager](../images/mqtt-manager.png)
+
 ---
 
 ## 2. Installation et configuration du plugin
@@ -211,6 +215,7 @@ Cochez les écrans à afficher sur le bouton, puis choisissez les commandes Jeed
 | **Chauffage** | température ambiante, consigne (info, curseur, mini, maxi, pas), modes Confort / Nuit / Vacances / Off, statut de chauffe, puissance, température extérieure |
 | **Capteurs** | une ligne par pièce : nom, température, humidité |
 | **Météo** | température, et en option humidité, icône de la condition, min / max, lever et coucher du soleil (voir §5.2) |
+| **Distributeurs** | une ligne par distributeur (croquettes…) : nom, commande curseur qui distribue, doses mini / maxi, état de connexion (voir §5.3) |
 | **Badges RFID** | commande message appelée quand un badge est passé, commande pour enregistrer un nouveau badge, et info qui renvoie le résultat à afficher (voir l'exemple complet au §5.1) |
 
 > Écrivez les noms affichés **sans accents** : la police du bouton ne les contient pas.
