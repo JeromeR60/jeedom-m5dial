@@ -614,7 +614,7 @@ class m5dial extends eqLogic {
 				continue;
 			}
 			try {
-				$eqLogic->lancerMajFirmware();
+				$eqLogic->lancerMajFirmware(false); // firmware deja recupere ci-dessus
 			} catch (Exception $e) {
 				log::add(__CLASS__, 'error', $eqLogic->getHumanName() . ' ' . $e->getMessage());
 			}
@@ -625,10 +625,36 @@ class m5dial extends eqLogic {
 		self::verifierMisesAJour();
 	}
 
+	// Avant une mise a jour : si GitHub publie un firmware plus recent que
+	// celui depose dans Jeedom (ou si aucun n'est depose), on le recupere.
+	// Un firmware depose a la main plus recent (mode avance) est conserve.
+	// GitHub injoignable : on continue avec le firmware deja depose, s'il y en a un.
+	public static function recupererFirmwareSiPlusRecent() {
+		$depose = self::infoFirmware();
+		try {
+			$release = self::derniereReleaseGithub();
+		} catch (Exception $e) {
+			if ($depose === null) {
+				throw $e;
+			}
+			log::add(__CLASS__, 'warning', __('Vérification GitHub impossible, envoi du firmware déjà déposé', __FILE__) . ' (' . $depose['version'] . ') : ' . $e->getMessage());
+			return;
+		}
+		$version = preg_replace('/^[^0-9]*/', '', $release['tag']);
+		if ($depose === null || version_compare($version, $depose['version'], '>')) {
+			self::telechargerFirmwareGithub();
+		}
+	}
+
 	// Demande au bouton de telecharger le firmware depose (message non retenu).
-	public function lancerMajFirmware() {
+	// $_verifierGithub : recupere d'abord la derniere release si elle est plus
+	// recente (plugin 1.8) ; false quand l'appelant vient de le faire.
+	public function lancerMajFirmware($_verifierGithub = true) {
 		if ($this->getLogicalId() == '') {
 			throw new Exception(__('Renseignez le nom du bouton', __FILE__));
+		}
+		if ($_verifierGithub) {
+			self::recupererFirmwareSiPlusRecent();
 		}
 		$info = self::infoFirmware();
 		if ($info === null) {

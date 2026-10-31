@@ -187,7 +187,7 @@ Chaque bouton apparaît dans **Mes boutons M5Dial** dès qu'il se connecte au br
 | État de la mise à jour | info texte | avancement d'une mise à jour du firmware |
 | Envoyer la configuration | action | envoie la configuration de l'équipement au bouton |
 | Revenir à la configuration locale | action | efface la configuration envoyée : le bouton reprend son `config.json` interne |
-| Mettre à jour le firmware | action | lance la mise à jour avec le firmware disponible dans Jeedom |
+| Mettre à jour le firmware | action | récupère si besoin la dernière version publiée sur GitHub, puis lance la mise à jour du bouton |
 | Mise à jour disponible | info binaire | 1 si une version plus récente du firmware est publiée (utilisable dans un scénario) |
 
 Les informations sont rafraîchies toutes les 5 minutes et à chaque reconnexion du bouton.
@@ -346,7 +346,9 @@ La ligne **Firmware disponible pour les mises à jour** affiche la version, la t
 
 ### 6.2 Mettre à jour un bouton
 
-Dans l'équipement, cliquez sur **Mettre à jour le firmware** (ou utilisez la commande action du même nom, par exemple dans un scénario).
+Dans l'équipement, cliquez sur **Mettre à jour le firmware** (ou utilisez la commande action du même nom, par exemple dans un virtuel ou un scénario).
+
+Depuis la version 1.8 du plugin, cette commande vérifie d'abord sur GitHub si une version plus récente que celle présente dans Jeedom est publiée, et la récupère automatiquement : un seul clic suffit après la notification d'une nouvelle version. Un firmware plus récent déposé à la main (mode avancé) est conservé. Si GitHub est injoignable, le firmware déjà présent dans Jeedom est envoyé.
 
 Le bouton télécharge le firmware depuis Jeedom, l'installe puis redémarre (environ 30 secondes). La commande **État de la mise à jour** suit l'avancement (pourcentage, `ok, redemarrage` ou message d'erreur). En cas de coupure, le bouton fait jusqu'à 3 tentatives.
 

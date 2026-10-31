@@ -1,5 +1,9 @@
 # Changelog plugin M5Dial
 
+## 1.8
+
+- « Mettre à jour le firmware » récupère d'abord la dernière version publiée sur GitHub si elle est plus récente que celle déposée dans Jeedom : plus besoin de cliquer avant sur « Récupérer la dernière version sur GitHub ». La commande peut donc être placée telle quelle dans un virtuel ou un scénario. Un firmware déposé à la main plus récent (mode avancé) est conservé ; si GitHub est injoignable, le firmware déjà déposé est envoyé.
+
 ## 1.7
 
 - Deux nouvelles commandes de supervision, historisées : **Mémoire mini** (point le plus bas atteint depuis le démarrage du bouton) et **Plus gros bloc libre** (plus grand bloc de mémoire réservable d'un coup, révèle la fragmentation). Nécessite le firmware 2.9.
