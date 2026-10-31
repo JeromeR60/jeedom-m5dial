@@ -179,8 +179,10 @@ Chaque bouton apparaît dans **Mes boutons M5Dial** dès qu'il se connecte au br
 | Adresse IP | info texte | adresse du bouton sur le réseau |
 | Signal Wi-Fi | info numérique (dBm) | qualité du Wi-Fi (bonne au-dessus de −65 dBm) |
 | Source de la configuration | info texte | Jeedom ou locale |
-| Durée de fonctionnement | info numérique (min) | temps depuis le dernier redémarrage |
-| Mémoire libre | info numérique (Ko) | mémoire disponible sur le bouton (historisée) |
+| Durée de fonctionnement | info numérique (min) | temps depuis le dernier redémarrage (historisée sur les nouveaux équipements : repart à 0 à chaque redémarrage) |
+| Mémoire libre | info numérique (Ko) | mémoire disponible sur le bouton au moment de l'envoi, toutes les 5 min (historisée) |
+| Mémoire mini | info numérique (Ko) | point le plus bas atteint depuis le démarrage (historisée, firmware 2.9) |
+| Plus gros bloc libre | info numérique (Ko) | plus grand bloc réservable d'un coup ; s'il baisse alors que la mémoire libre reste stable, la mémoire se fragmente (historisée, firmware 2.9) |
 | Dernière erreur de configuration | info texte | erreur renvoyée si la configuration reçue est invalide |
 | État de la mise à jour | info texte | avancement d'une mise à jour du firmware |
 | Envoyer la configuration | action | envoie la configuration de l'équipement au bouton |

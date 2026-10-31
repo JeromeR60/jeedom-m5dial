@@ -41,7 +41,7 @@ class m5dial extends eqLogic {
 		'ip'            => array('Adresse IP', 'info', 'string', '', 0),
 		'rssi'          => array('Signal Wi-Fi', 'info', 'numeric', 'dBm', 1),
 		'config_source' => array('Source de la configuration', 'info', 'string', '', 0),
-		'uptime'        => array('Durée de fonctionnement', 'info', 'numeric', 'min', 0),
+		'uptime'        => array('Durée de fonctionnement', 'info', 'numeric', 'min', 1),
 		'memoire'       => array('Mémoire libre', 'info', 'numeric', 'Ko', 1),
 		'config_erreur' => array('Dernière erreur de configuration', 'info', 'string', '', 0),
 		'envoyer_config'=> array('Envoyer la configuration', 'action', 'other', '', 0),
@@ -49,6 +49,10 @@ class m5dial extends eqLogic {
 		'maj_etat'      => array('État de la mise à jour', 'info', 'string', '', 0),
 		'maj_firmware'  => array('Mettre à jour le firmware', 'action', 'other', '', 0),
 		'maj_dispo'     => array('Mise à jour disponible', 'info', 'binary', '', 0),
+		// Plugin 1.7 / firmware 2.9 : ajoutees en fin de liste pour ne pas
+		// decaler l'ordre des commandes existantes.
+		'memoire_mini'  => array('Mémoire mini', 'info', 'numeric', 'Ko', 1),
+		'plus_gros_bloc'=> array('Plus gros bloc libre', 'info', 'numeric', 'Ko', 1),
 	);
 
 	/* ---------------------------------------------------------------- */
@@ -169,6 +173,8 @@ class m5dial extends eqLogic {
 				'config'         => 'config_source',
 				'uptimeMin'      => 'uptime',
 				'memoireLibreKo' => 'memoire',
+				'memoireMiniKo'  => 'memoire_mini',
+				'plusGrosBlocKo' => 'plus_gros_bloc',
 			);
 			foreach ($correspondance as $cle => $logicalId) {
 				if (isset($info[$cle])) {

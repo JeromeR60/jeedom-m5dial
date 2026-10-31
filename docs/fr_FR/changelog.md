@@ -1,5 +1,10 @@
 # Changelog plugin M5Dial
 
+## 1.7
+
+- Deux nouvelles commandes de supervision, historisées : **Mémoire mini** (point le plus bas atteint depuis le démarrage du bouton) et **Plus gros bloc libre** (plus grand bloc de mémoire réservable d'un coup, révèle la fragmentation). Nécessite le firmware 2.9.
+- La **Durée de fonctionnement** est historisée sur les nouveaux équipements (permet de repérer les redémarrages sur un graphique).
+
 ## 1.6
 
 - Nouvel écran **Distributeur** (croquettes…) : choix du nombre de doses à la molette, distribution d'un appui, état de connexion (distribution bloquée hors ligne). Nécessite le firmware 2.8.
