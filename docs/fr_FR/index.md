@@ -344,6 +344,8 @@ En mode avancé, le bouton **Déposer un firmware.bin** apparaît à côté :
 
 La ligne **Firmware disponible pour les mises à jour** affiche la version, la taille et la date du fichier présent dans Jeedom.
 
+> Depuis la version 1.8, cette étape est facultative : **Mettre à jour le firmware** (§6.2) récupère elle-même la dernière version publiée si elle est plus récente.
+
 ### 6.2 Mettre à jour un bouton
 
 Dans l'équipement, cliquez sur **Mettre à jour le firmware** (ou utilisez la commande action du même nom, par exemple dans un virtuel ou un scénario).
@@ -364,6 +366,28 @@ Chaque nuit, le plugin consulte la dernière version publiée. Si un bouton est 
 
 Avec l'option **Installer automatiquement les nouvelles versions**, le plugin télécharge le firmware et met à jour lui-même les boutons en ligne.
 
+### 6.4 Exemple : un bouton « Mettre à jour » sur votre dashboard
+
+Pour garder la main sur le moment de la mise à jour tout en l'ayant à portée de clic, ajoutez un bouton dans un de vos virtuels, visible uniquement quand une nouvelle version existe.
+
+**a. Dans votre virtuel**, ajoutez une commande **Action** (sous-type **Défaut**), par exemple « Mettre à jour M5Dial », et choisissez dans sa colonne **Paramètres** la commande `#[Objet][Votre bouton M5Dial][Mettre à jour le firmware]#`. Un clic suffit : le plugin récupère la dernière version sur GitHub puis l'envoie au bouton.
+
+**b. Un scénario** affiche ce bouton seulement quand c'est utile :
+
+- **Déclencheur** : `#[Objet][Votre bouton M5Dial][Mise à jour disponible]#`
+- **SI** `triggerValue() == 1` **ALORS** une notification de votre choix (facultatif)
+- puis, **en dehors du SI**, un bloc **Code** :
+
+```php
+$cmd = cmd::byString('#[Objet][Votre virtuel][Mettre à jour M5Dial]#');
+$dispo = cmd::byString('#[Objet][Votre bouton M5Dial][Mise à jour disponible]#')->execCmd();
+$cmd->setIsVisible($dispo == 1 ? 1 : 0);
+$cmd->save();
+$cmd->getEqLogic()->refreshWidget();
+```
+
+Remplacez les chemins par les vôtres (sélecteur de commandes). Le déclencheur ne réagit qu'à un **changement** : lancez le scénario une fois à la main pour masquer le bouton dès maintenant. Avec plusieurs boutons M5Dial, ajoutez un déclencheur et un bloc par bouton.
+
 ---
 
 ## 7. Topics MQTT (pour information)
@@ -371,7 +395,7 @@ Avec l'option **Installer automatiquement les nouvelles versions**, le plugin t�
 | Topic | Sens | Contenu |
 | --- | --- | --- |
 | `m5dial/<nom>/status` | bouton → Jeedom | `online` / `offline` (retenu, message de dernière volonté) |
-| `m5dial/<nom>/info` | bouton → Jeedom | JSON : nom, clientId, version, config, ip, mac, rssi, ssid, uptimeMin, memoireLibreKo (retenu) |
+| `m5dial/<nom>/info` | bouton → Jeedom | JSON : nom, clientId, version, config, ip, mac, rssi, ssid, uptimeMin, memoireLibreKo, memoireMiniKo, plusGrosBlocKo (retenu, toutes les 5 min) |
 | `m5dial/<nom>/config` | Jeedom → bouton | configuration JSON (retenu) ; message vide = configuration locale |
 | `m5dial/<nom>/config/erreur` | bouton → Jeedom | erreur de configuration |
 | `m5dial/<nom>/ota` | Jeedom → bouton | `{"url": ..., "version": ...}` : demande de mise à jour |
@@ -387,7 +411,9 @@ Avec l'option **Installer automatiquement les nouvelles versions**, le plugin t�
 | Aucune demande d'appairage | Vérifier l'adresse de Jeedom saisie dans le portail ; rouvrir le portail (bouton maintenu au démarrage) et cocher *Réappairer*. |
 | Commandes lentes, déconnexions MQTT | Lancer un `ping -t` vers le bouton et vers Jeedom : si seul le bouton perd des paquets, le problème vient du Wi-Fi (Wi-Fi 6 sur 2,4 GHz, signal faible). |
 | « La configuration est vide » | Sauvegarder l'équipement avant d'envoyer la configuration. |
-| Mise à jour en échec | Vérifier qu'un firmware est disponible (§6.1) et que le bouton est en ligne, puis relancer. |
+| Mise à jour en échec | Vérifier que le bouton est en ligne et que Jeedom peut joindre GitHub (sinon déposer le firmware à la main, §6.1), puis relancer. Le détail est dans le log `m5dial`. |
+| Le bouton répond « déjà à jour » | Il a déjà la version proposée : rien à faire. |
+| Surveiller la mémoire du bouton | Afficher sur un même graphique **Mémoire libre**, **Mémoire mini**, **Plus gros bloc libre** et **Durée de fonctionnement**. Des courbes plates entre deux redémarrages sont normales ; un pic de mémoire libre correspond en général à un redémarrage (la durée repart à 0). À surveiller : *Mémoire mini* qui baisse jour après jour, ou *Plus gros bloc libre* qui descend sous ~20 Ko. |
 | Les accents s'affichent mal | Écrire les noms sans accents. |
 
 ---

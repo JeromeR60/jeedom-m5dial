@@ -3,6 +3,7 @@
 ## 1.8
 
 - « Mettre à jour le firmware » récupère d'abord la dernière version publiée sur GitHub si elle est plus récente que celle déposée dans Jeedom : plus besoin de cliquer avant sur « Récupérer la dernière version sur GitHub ». La commande peut donc être placée telle quelle dans un virtuel ou un scénario. Un firmware déposé à la main plus récent (mode avancé) est conservé ; si GitHub est injoignable, le firmware déjà déposé est envoyé.
+- Documentation : exemple de bouton « Mettre à jour » dans un virtuel, affiché par scénario seulement quand une version est disponible (§6.4) ; lecture des courbes de mémoire (§8).
 
 ## 1.7
 
