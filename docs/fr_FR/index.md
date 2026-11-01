@@ -335,6 +335,10 @@ Sur le bouton : **tournez la molette** pour choisir le nombre de doses, puis **a
 
 Avec un planning planningDistrib, l'écran s'ouvre sur une **vue d'ensemble** : anneau des 24 heures du jour (dose de chaque heure, orange d'autant plus intense que la dose est forte, repère sur l'heure actuelle), doses distribuées / prévues aujourd'hui (avec planningDistrib 0.1.6 ou plus : doses du planning seulement, les distributions manuelles sont affichées à part, « +1 manuelle »), prochaine et dernière distribution. Tournez la molette ou appuyez pour choisir la dose ; sans action pendant 10 secondes, la vue d'ensemble revient.
 
+<img src="../images/bouton-distributeur.jpg" alt="Écran Distributeur avec planning" width="260">
+
+*Vue d'ensemble d'un distributeur : planning du jour sur l'anneau, 13 doses du planning distribuées sur 19 prévues, plus 4 doses manuelles.*
+
 Si vous modifiez les doses mini / maxi ou la couleur dans planningDistrib, **renvoyez la configuration** au bouton pour qu'il les reprenne. Le planning lui-même (doses heure par heure) se met à jour tout seul.
 
 ### 5.4 Page Planning du chauffage (facultatif)
@@ -350,6 +354,10 @@ Pour un thermostat dont les modes sont programmés par le plugin [planningThermo
 Sans planningThermo, ou avec le champ sur *Aucun*, l'écran Chauffage reste tel quel.
 
 **Sur le bouton** : depuis l'écran Chauffage, **glissez vers la gauche** pour ouvrir la page Planning (deux points en bas indiquent la page) ; glissez vers la droite pour revenir au thermostat.
+
+<img src="../images/bouton-chauffage.jpg" alt="Écran Chauffage" width="260"> <img src="../images/bouton-planning.jpg" alt="Page Planning" width="260">
+
+*À gauche, l'écran Chauffage (mode Eco actif, deux points : page 1 sur 2). À droite, la page Planning : Eco jusqu'à 18:00, puis Confort.*
 
 - L'**anneau** montre le planning du jour en 48 créneaux de 30 minutes, aux couleurs des modes, 00:00 en haut. Les créneaux passés sont estompés, un repère blanc marque l'heure actuelle et une dérogation en cours est soulignée.
 - Au **centre** : l'état (*Planning*, *Dérogation* ou *Planning suspendu*), le mode en cours dans sa couleur, son heure de fin (« jusqu'à 23:00 ») et le mode suivant.
