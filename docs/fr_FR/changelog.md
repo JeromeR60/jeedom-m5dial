@@ -1,5 +1,11 @@
 # Changelog plugin M5Dial
 
+## 1.10
+
+- Écran Chauffage : nouvelle **page Planning** (swipe vers la gauche depuis le thermostat), pour les thermostats pilotés par le plugin **planningThermo**. Le bouton affiche le planning du jour sur un anneau de 48 créneaux, le mode en cours, son heure de fin et le mode suivant. Il permet de créer une dérogation (mode et durée : jusqu'au prochain changement, 30 min, 1 h, 2 h, 3 h), de l'annuler, et de suspendre ou reprendre le planning. Quand le thermostat est verrouillé (vacances), la page l'indique. Nécessite le firmware 3.1.
+- Section Chauffage : champ **Planning (page supplémentaire)**, liste des équipements planningThermo. Il suffit de choisir l'équipement : les commandes, l'info de verrouillage du thermostat et les modes avec leurs couleurs sont repris automatiquement à chaque envoi de la configuration. Sans plugin planningThermo, l'écran Chauffage reste tel quel.
+- « Importer depuis un thermostat » choisit aussi le planning qui pilote ce thermostat, s'il y en a un.
+
 ## 1.9
 
 - Écran Chauffage : nouveau **mode Eco** (champ « Mode Eco » dans la section Chauffage). Sur le bouton, seuls les modes renseignés sont affichés et proposés à l'appui : un thermostat sans Eco (ou sans Vacances) n'a plus d'icône inutile. Nécessite le firmware 3.0.

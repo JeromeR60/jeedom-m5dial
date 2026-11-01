@@ -253,6 +253,7 @@ class m5dial extends eqLogic {
 			throw new Exception(__('La configuration est vide', __FILE__));
 		}
 		unset($config['device']);
+		$config = self::completerPlanning($config, $this->getHumanName());
 		$message = json_encode($config, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 		if (strlen($message) > 8000) {
 			throw new Exception(__('Configuration trop grande pour le bouton (8 Ko maximum)', __FILE__) . ' : ' . strlen($message) . ' ' . __('octets', __FILE__));
@@ -621,6 +622,86 @@ class m5dial extends eqLogic {
 		}
 	}
 
+	/* ---------------------------------------------------------------- */
+	/* Page Planning de l'ecran Chauffage (plugin planningThermo)        */
+	/* ---------------------------------------------------------------- */
+
+	// Equipements du plugin planningThermo (liste de l'editeur). Liste vide si
+	// le plugin n'est pas installe.
+	public static function listePlanningsThermo() {
+		$liste = array();
+		if (!class_exists('planningThermo')) {
+			return $liste;
+		}
+		foreach (eqLogic::byType('planningThermo') as $eq) {
+			$liste[] = array('id' => intval($eq->getId()), 'nom' => $eq->getHumanName(), 'actif' => $eq->getIsEnable() ? 1 : 0, 'thermostat' => intval($eq->getConfiguration('thermostat', 0)));
+		}
+		return $liste;
+	}
+
+	// A l'envoi de la configuration : "chauffage.planning.equipement" (id d'un
+	// equipement planningThermo) est complete avec les commandes du planning
+	// (retrouvees par leur logicalId), l'info de verrouillage du thermostat et
+	// les modes (lettre, libelle, couleur). Sans plugin ou sans equipement
+	// valide, la section planning est retiree : le bouton n'affiche pas la page.
+	public static function completerPlanning($_config, $_nomBouton = '') {
+		if (!isset($_config['chauffage']['planning']) || !is_array($_config['chauffage']['planning'])) {
+			return $_config;
+		}
+		$id = isset($_config['chauffage']['planning']['equipement']) ? intval($_config['chauffage']['planning']['equipement']) : 0;
+		$eq = ($id > 0 && class_exists('planningThermo')) ? eqLogic::byId($id) : null;
+		if (!is_object($eq) || $eq->getEqType_name() != 'planningThermo' || !$eq->getIsEnable()) {
+			if ($id > 0) {
+				log::add(__CLASS__, 'warning', $_nomBouton . ' ' . __('planning introuvable ou désactivé, page Planning non envoyée', __FILE__) . ' (' . $id . ')');
+			}
+			unset($_config['chauffage']['planning']);
+			if (count($_config['chauffage']) == 0) {
+				$_config['chauffage'] = new stdClass(); // reste un objet JSON
+			}
+			return $_config;
+		}
+		$planning = array('equipement' => $id);
+		$commandes = array(
+			'planning' => 'planningInfo', 'mode' => 'modeInfo', 'until' => 'finInfo',
+			'derog' => 'derogInfo', 'suspended' => 'suspenduInfo',
+			'derogation' => 'derogationAction', 'cancel' => 'annulerAction',
+			'suspend' => 'suspendreAction', 'resume' => 'reprendreAction',
+		);
+		foreach ($commandes as $logicalId => $cle) {
+			$cmd = $eq->getCmd(null, $logicalId);
+			if (is_object($cmd)) {
+				$planning[$cle] = intval($cmd->getId());
+			}
+		}
+		if (!isset($planning['planningInfo'])) {
+			log::add(__CLASS__, 'warning', $_nomBouton . ' ' . __('commande Planning introuvable dans', __FILE__) . ' ' . $eq->getHumanName());
+			unset($_config['chauffage']['planning']);
+			return $_config;
+		}
+		$verrou = trim(str_replace('#', '', (string) $eq->getConfiguration('blockCmd', '')));
+		if (is_numeric($verrou) && is_object(cmd::byId(intval($verrou)))) {
+			$planning['verrouInfo'] = intval($verrou);
+		}
+		$modes = array();
+		$listeModes = $eq->getConfiguration('modes');
+		if (!is_array($listeModes) || count($listeModes) == 0) {
+			$listeModes = array(
+				array('k' => 'C', 'label' => 'Confort', 'color' => '#F0997B'),
+				array('k' => 'E', 'label' => 'Eco', 'color' => '#5DCAA5'),
+				array('k' => 'N', 'label' => 'Nuit', 'color' => '#AFA9EC'),
+			);
+		}
+		foreach ($listeModes as $mode) {
+			if (!is_array($mode) || !isset($mode['k']) || !isset($mode['label'])) continue;
+			$couleur = (isset($mode['color']) && preg_match('/^#[0-9a-fA-F]{6}$/', $mode['color'])) ? strtoupper($mode['color']) : '#999999';
+			$modes[] = array('k' => strtoupper(substr($mode['k'], 0, 1)), 'label' => $mode['label'], 'color' => $couleur);
+			if (count($modes) >= 8) break;
+		}
+		$planning['modes'] = $modes;
+		$_config['chauffage']['planning'] = $planning;
+		return $_config;
+	}
+
 	// Editeur, section Chauffage, bouton « Importer depuis un thermostat » :
 	// retrouve les commandes d'un equipement du plugin Thermostat officiel par
 	// leur logicalId, et ses modes (commandes « modeAction ») par leur nom.
@@ -672,6 +753,16 @@ class m5dial extends eqLogic {
 			} else {
 				$autresModes[] = $cmd->getName();
 			}
+		}
+		// Un equipement planningThermo pilote ce thermostat : propose sa page Planning.
+		$plannings = array();
+		foreach (self::listePlanningsThermo() as $p) {
+			if ($p['thermostat'] == intval($thermostat->getId()) && $p['actif']) {
+				$plannings[] = $p['id'];
+			}
+		}
+		if (count($plannings) == 1) {
+			$champs['planning.equipement'] = $plannings[0];
 		}
 		$attendus = array('temperatureAmbianteInfo', 'consigneInfo', 'consigneAction', 'modeInfo', 'statutInfo', 'modes.confort', 'modes.eco', 'modes.nuit', 'modes.vacances', 'modes.off');
 		$manquants = array();

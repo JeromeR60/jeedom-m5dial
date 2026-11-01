@@ -79,6 +79,11 @@ try {
 		ajax::success(m5dial::importerThermostat(init('id')));
 	}
 
+	// Editeur, section Chauffage : equipements du plugin planningThermo.
+	if (init('action') == 'listePlanningsThermo') {
+		ajax::success(m5dial::listePlanningsThermo());
+	}
+
 	// Noms complets ([Objet][Equipement][Commande]) des commandes de l'editeur.
 	if (init('action') == 'nomsCommandes') {
 		$ids = json_decode(init('ids'), true);

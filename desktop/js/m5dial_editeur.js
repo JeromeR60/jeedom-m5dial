@@ -10,7 +10,8 @@
 /* Description des sections. Champ :
  *   c : chemin dans l'objet ("actions.present", "tempRangeMireds.0")
  *   l : libelle
- *   t : 'info' / 'action' (commande Jeedom), 'texte' ou 'nombre'
+ *   t : 'info' / 'action' (commande Jeedom), 'texte', 'nombre' ou
+ *       'planning' (liste des equipements du plugin planningThermo)
  *   d : aide (facultatif)
  */
 var M5DIAL_SECTIONS = [
@@ -87,7 +88,8 @@ var M5DIAL_SECTIONS = [
       { c: 'modes.off', l: '{{Mode Off}}', t: 'action' },
       { c: 'statutInfo', l: '{{Statut (chauffe ou non)}}', t: 'info' },
       { c: 'puissanceInfo', l: '{{Puissance (%)}}', t: 'info' },
-      { c: 'temperatureExterieureInfo', l: '{{Température extérieure}}', t: 'info' }
+      { c: 'temperatureExterieureInfo', l: '{{Température extérieure}}', t: 'info' },
+      { c: 'planning.equipement', l: '{{Planning (page supplémentaire)}}', t: 'planning', d: '{{Équipement du plugin planningThermo. Les commandes, les modes et leurs couleurs sont repris automatiquement à chaque envoi de la configuration. Nécessite le firmware 3.1}}' }
     ]
   },
   {
@@ -276,7 +278,9 @@ function m5dialHtmlChamp(_champ, _cle, _index, _valeur) {
   var html = '<div class="form-group">'
   html += '<label class="col-sm-4 control-label">' + _champ.l + aide + '</label>'
   html += '<div class="col-sm-7">'
-  if (_champ.t === 'info' || _champ.t === 'action') {
+  if (_champ.t === 'planning') {
+    html += m5dialHtmlPlanning(attrs, _valeur)
+  } else if (_champ.t === 'info' || _champ.t === 'action') {
     var id = (_valeur !== undefined && _valeur !== 0) ? _valeur : ''
     html += '<div class="input-group input-group-sm">'
     html += '<input class="form-control roundedLeft m5dialNomCmd" readonly' + attrs + ' data-id="' + id + '" placeholder="{{Aucune}}" value="' + (id !== '' ? '#' + id + '#' : '') + '">'
@@ -289,6 +293,51 @@ function m5dialHtmlChamp(_champ, _cle, _index, _valeur) {
     html += '<input class="form-control input-sm m5dialSaisie" type="' + type + '"' + attrs + ' data-type="' + _champ.t + '" value="' + (_valeur !== undefined ? String(_valeur).replace(/"/g, '&quot;') : '') + '">'
   }
   html += '</div></div>'
+  return html
+}
+
+// Equipements planningThermo : charges une fois (null = pas encore charges).
+var m5dialPlanningsThermo = null
+var m5dialPlanningsChargement = false
+
+function m5dialChargerPlannings() {
+  if (m5dialPlanningsThermo !== null || m5dialPlanningsChargement) return
+  m5dialPlanningsChargement = true
+  $.ajax({
+    type: 'POST',
+    url: 'plugins/m5dial/core/ajax/m5dial.ajax.php',
+    data: { action: 'listePlanningsThermo' },
+    dataType: 'json',
+    error: function (request, status, error) {
+      m5dialPlanningsChargement = false
+      m5dialPlanningsThermo = []
+      handleAjaxError(request, status, error)
+    },
+    success: function (data) {
+      m5dialPlanningsChargement = false
+      m5dialPlanningsThermo = (data.state == 'ok' && Array.isArray(data.result)) ? data.result : []
+      m5dialAfficher()
+    }
+  })
+}
+
+function m5dialHtmlPlanning(_attrs, _valeur) {
+  m5dialChargerPlannings()
+  var html = '<select class="form-control input-sm m5dialSaisie" data-type="nombre"' + _attrs + '>'
+  html += '<option value="">{{Aucun (pas de page Planning)}}</option>'
+  var trouve = false
+  ;(m5dialPlanningsThermo || []).forEach(function (p) {
+    var sel = (String(p.id) === String(_valeur)) ? ' selected' : ''
+    if (sel) trouve = true
+    html += '<option value="' + p.id + '"' + sel + '>' + $('<span>').text(p.nom).html() + (p.actif ? '' : ' ({{désactivé}})') + '</option>'
+  })
+  if (_valeur !== undefined && _valeur !== '' && _valeur !== 0 && !trouve) {
+    html += '<option value="' + _valeur + '" selected>#' + _valeur + ' ({{introuvable}})</option>'
+  }
+  html += '</select>'
+  if (m5dialPlanningsThermo !== null && m5dialPlanningsThermo.length === 0) {
+    html += '<span class="help-block">{{Plugin planningThermo absent ou sans équipement : l\'écran Chauffage reste sans page Planning.}}</span>'
+  }
   return html
 }
 
