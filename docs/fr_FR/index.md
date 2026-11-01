@@ -319,6 +319,10 @@ Pour un distributeur de croquettes (ou tout appareil qui distribue un nombre de 
 
 > **Planning facultatif** : avec le plugin [planningDistrib](https://github.com/JeromeR60/jeedom-planningDistributeur) (distribution automatique à heures fixes), le bouton affiche aussi le planning du jour. Il faut le firmware 3.2 ou plus (3.3 pour afficher les doses manuelles à part, avec planningDistrib 0.1.6 ou plus).
 
+<img src="../images/widget-planning-distrib.png" alt="Widget planningDistrib dans Jeedom" width="400">
+
+*Le planning du distributeur dans Jeedom (widget planningDistrib) : c'est ce planning que le bouton affiche sur son anneau.*
+
 | Champ | Rôle |
 | --- | --- |
 | Nom affiché | nom sur l'écran (sans accent) ; vide avec un planning : nom de l'équipement planningDistrib |
@@ -336,6 +340,10 @@ Si vous modifiez les doses mini / maxi ou la couleur dans planningDistrib, **ren
 ### 5.4 Page Planning du chauffage (facultatif)
 
 Pour un thermostat dont les modes sont programmés par le plugin [planningThermo](https://github.com/JeromeR60/jeedom-planningThermo). Il faut le **firmware 3.1** ou plus.
+
+<img src="../images/widget-planning-thermo.png" alt="Widget planningThermo dans Jeedom" width="400">
+
+*Le planning du thermostat dans Jeedom (widget planningThermo) : le bouton reprend ses modes et ses couleurs.*
 
 **Configuration** : dans la section **Chauffage**, choisissez l'équipement planningThermo dans le champ **Planning (page supplémentaire)**, sauvegardez, puis envoyez la configuration. Le bouton **Importer depuis un thermostat** le choisit pour vous si un seul planning pilote ce thermostat. Le plugin reprend tout seul les commandes du planning, l'info de verrouillage du thermostat et les modes avec leurs couleurs. Si vous modifiez les modes ou les couleurs dans planningThermo, renvoyez la configuration.
 
