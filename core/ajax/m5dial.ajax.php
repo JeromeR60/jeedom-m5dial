@@ -84,6 +84,11 @@ try {
 		ajax::success(m5dial::listePlanningsThermo());
 	}
 
+	// Editeur, section Distributeurs : equipements du plugin planningDistrib.
+	if (init('action') == 'listePlanningsDistrib') {
+		ajax::success(m5dial::listePlanningsDistrib());
+	}
+
 	// Noms complets ([Objet][Equipement][Commande]) des commandes de l'editeur.
 	if (init('action') == 'nomsCommandes') {
 		$ids = json_decode(init('ids'), true);

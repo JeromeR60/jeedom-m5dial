@@ -254,6 +254,7 @@ class m5dial extends eqLogic {
 		}
 		unset($config['device']);
 		$config = self::completerPlanning($config, $this->getHumanName());
+		$config = self::completerPlanningsDistrib($config, $this->getHumanName());
 		$message = json_encode($config, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
 		if (strlen($message) > 8000) {
 			throw new Exception(__('Configuration trop grande pour le bouton (8 Ko maximum)', __FILE__) . ' : ' . strlen($message) . ' ' . __('octets', __FILE__));
@@ -699,6 +700,70 @@ class m5dial extends eqLogic {
 		}
 		$planning['modes'] = $modes;
 		$_config['chauffage']['planning'] = $planning;
+		return $_config;
+	}
+
+	/* ---------------------------------------------------------------- */
+	/* Ecran Distributeur : planning du plugin planningDistrib           */
+	/* ---------------------------------------------------------------- */
+
+	// Equipements du plugin planningDistrib (liste de l'editeur). Liste vide
+	// si le plugin n'est pas installe.
+	public static function listePlanningsDistrib() {
+		$liste = array();
+		if (!class_exists('planningDistrib')) {
+			return $liste;
+		}
+		foreach (eqLogic::byType('planningDistrib') as $eq) {
+			$liste[] = array('id' => intval($eq->getId()), 'nom' => $eq->getHumanName(), 'actif' => $eq->getIsEnable() ? 1 : 0);
+		}
+		return $liste;
+	}
+
+	// A l'envoi de la configuration : chaque distributeur qui a un
+	// "planningEquipement" (id d'un equipement planningDistrib) est complete
+	// avec les commandes du planning (logicalId), ses bornes de dose et sa
+	// couleur. La distribution manuelle passe alors par la commande
+	// "distribute" du planning, pour etre comptee dans « Distribue aujourd'hui ».
+	public static function completerPlanningsDistrib($_config, $_nomBouton = '') {
+		if (!isset($_config['distributeurs']) || !is_array($_config['distributeurs'])) {
+			return $_config;
+		}
+		$cles = array('planningInfo', 'prevuInfo', 'distribueInfo', 'prochaineInfo', 'derniereDoseInfo', 'derniereHeureInfo', 'distribuerAction', 'couleur');
+		foreach ($_config['distributeurs'] as $i => $distrib) {
+			if (!is_array($distrib)) continue;
+			foreach ($cles as $cle) {
+				unset($distrib[$cle]);
+			}
+			$id = isset($distrib['planningEquipement']) ? intval($distrib['planningEquipement']) : 0;
+			if ($id > 0) {
+				$eq = class_exists('planningDistrib') ? eqLogic::byId($id) : null;
+				if (!is_object($eq) || $eq->getEqType_name() != 'planningDistrib' || !$eq->getIsEnable()) {
+					log::add(__CLASS__, 'warning', $_nomBouton . ' ' . __('planning du distributeur introuvable ou désactivé', __FILE__) . ' (' . $id . ')');
+				} else {
+					$commandes = array(
+						'planning' => 'planningInfo', 'todayPlanned' => 'prevuInfo', 'todayDone' => 'distribueInfo',
+						'next' => 'prochaineInfo', 'lastDose' => 'derniereDoseInfo', 'lastTime' => 'derniereHeureInfo',
+						'distribute' => 'distribuerAction',
+					);
+					foreach ($commandes as $logicalId => $cle) {
+						$cmd = $eq->getCmd(null, $logicalId);
+						if (is_object($cmd)) {
+							$distrib[$cle] = intval($cmd->getId());
+						}
+					}
+					$min = max(1, intval($eq->getConfiguration('doseMin', 1)));
+					$max = max($min, intval($eq->getConfiguration('doseMax', 12)));
+					$distrib['doseRange'] = array($min, $max);
+					$couleur = (string) $eq->getConfiguration('color', '');
+					$distrib['couleur'] = preg_match('/^#[0-9a-fA-F]{6}$/', $couleur) ? strtoupper($couleur) : '#EF9F27';
+					if (!isset($distrib['nom']) || trim($distrib['nom']) == '') {
+						$distrib['nom'] = $eq->getName();
+					}
+				}
+			}
+			$_config['distributeurs'][$i] = $distrib;
+		}
 		return $_config;
 	}
 

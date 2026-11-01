@@ -1,5 +1,10 @@
 # Changelog plugin M5Dial
 
+## 1.11
+
+- Écran Distributeur : champ **Planning (planningDistrib)** pour chaque distributeur, liste des équipements du plugin planningDistrib. Le bouton affiche alors une vue d'ensemble : planning du jour sur un anneau de 24 heures, doses distribuées / prévues aujourd'hui, prochaine et dernière distribution. La distribution manuelle passe par le plugin planningDistrib (comptée dans « Distribué aujourd'hui »). Bornes de dose, couleur et nom (s'il est vide) sont repris du planning à chaque envoi de la configuration. Nécessite le firmware 3.2.
+- Firmware 3.2 : distribution en **deux appuis** (« Distribuer 3 ? », second appui dans les 3 secondes), pour tous les distributeurs.
+
 ## 1.10
 
 - Écran Chauffage : nouvelle **page Planning** (swipe vers la gauche depuis le thermostat), pour les thermostats pilotés par le plugin **planningThermo**. Le bouton affiche le planning du jour sur un anneau de 48 créneaux, le mode en cours, son heure de fin et le mode suivant. Il permet de créer une dérogation (mode et durée : jusqu'au prochain changement, 30 min, 1 h, 2 h, 3 h), de l'annuler, et de suspendre ou reprendre le planning. Quand le thermostat est verrouillé (vacances), la page l'indique. Nécessite le firmware 3.1.

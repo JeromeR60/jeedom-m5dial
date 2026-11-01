@@ -217,7 +217,7 @@ Cochez les écrans à afficher sur le bouton, puis choisissez les commandes Jeed
 | **Chauffage** | température ambiante, consigne (info, curseur, mini, maxi, pas), modes Confort / Eco / Nuit / Vacances / Off (seuls les modes renseignés apparaissent sur le bouton ; Eco nécessite le firmware 3.0), statut de chauffe, puissance, température extérieure. Le bouton **Importer depuis un thermostat** remplit la section à partir d'un équipement du plugin Thermostat. Champ **Planning** (facultatif, firmware 3.1) : équipement du plugin planningThermo, affiché sur une page supplémentaire de l'écran Chauffage (swipe vers la gauche) avec le planning du jour, les dérogations, l'annulation et la suspension ; les commandes et les couleurs des modes sont reprises automatiquement à chaque envoi de la configuration |
 | **Capteurs** | une ligne par pièce : nom, température, humidité |
 | **Météo** | température, et en option humidité, icône de la condition, min / max, lever et coucher du soleil (voir §5.2) |
-| **Distributeurs** | une ligne par distributeur (croquettes…) : nom, commande curseur qui distribue, doses mini / maxi, état de connexion (voir §5.3) |
+| **Distributeurs** | une ligne par distributeur (croquettes…) : nom, planning planningDistrib (facultatif), commande curseur qui distribue, doses mini / maxi, état de connexion (voir §5.3) |
 | **Badges RFID** | commande message appelée quand un badge est passé, commande pour enregistrer un nouveau badge, et info qui renvoie le résultat à afficher (voir l'exemple complet au §5.1) |
 
 > Écrivez les noms affichés **sans accents** : la police du bouton ne les contient pas.
@@ -318,12 +318,15 @@ Pour un distributeur de croquettes (ou tout appareil qui distribue un nombre de 
 
 | Champ | Rôle |
 | --- | --- |
-| Nom affiché | nom sur l'écran (sans accent) |
+| Nom affiché | nom sur l'écran (sans accent) ; vide avec un planning : nom de l'équipement planningDistrib |
+| Planning (planningDistrib) | facultatif (firmware 3.2) : équipement du plugin **planningDistrib**. Le bouton affiche alors le planning du jour, et la distribution passe par ce plugin (elle est comptée dans « Distribué aujourd'hui »). Les doses mini / maxi et la couleur sont reprises du planning à chaque envoi de la configuration |
 | Distribuer (curseur) | commande **action curseur** qui reçoit le nombre de doses et lance la distribution |
 | Dose mini / maxi | plage de la molette (1 à 12 par défaut) |
 | Connexion (info binaire) | facultatif : 1 = connecté. Si l'appareil est hors ligne, le bouton affiche « Hors ligne » et refuse de distribuer |
 
-Sur le bouton : **tournez la molette** pour choisir le nombre de doses, puis **appuyez** (bouton ou tap sur l'écran) pour distribuer ; « Distribue ! » confirme l'envoi. Avec plusieurs distributeurs, **glissez du doigt** pour passer de l'un à l'autre. Appui long ou icône retour : accueil.
+Sur le bouton : **tournez la molette** pour choisir le nombre de doses, puis **appuyez** (bouton ou tap sur l'écran) : « Distribuer 3 ? » s'affiche ; **appuyez une seconde fois dans les 3 secondes** pour distribuer (firmware 3.2 ; sinon la demande est annulée). « Distribue ! » confirme l'envoi. Avec plusieurs distributeurs, **glissez du doigt** pour passer de l'un à l'autre. Appui long ou icône retour : annule la confirmation ou le choix de la dose, puis retour à l'accueil.
+
+Avec un planning planningDistrib, l'écran s'ouvre sur une **vue d'ensemble** : anneau des 24 heures du jour (dose de chaque heure, orange d'autant plus intense que la dose est forte, repère sur l'heure actuelle), doses distribuées / prévues aujourd'hui, prochaine et dernière distribution. Tournez la molette ou appuyez pour choisir la dose ; sans action pendant 10 secondes, la vue d'ensemble revient.
 
 ---
 

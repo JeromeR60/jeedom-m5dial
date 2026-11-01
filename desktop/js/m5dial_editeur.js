@@ -10,8 +10,9 @@
 /* Description des sections. Champ :
  *   c : chemin dans l'objet ("actions.present", "tempRangeMireds.0")
  *   l : libelle
- *   t : 'info' / 'action' (commande Jeedom), 'texte', 'nombre' ou
- *       'planning' (liste des equipements du plugin planningThermo)
+ *   t : 'info' / 'action' (commande Jeedom), 'texte', 'nombre',
+ *       'planning' ou 'planningDistrib' (liste des equipements du plugin
+ *       planningThermo / planningDistrib)
  *   d : aide (facultatif)
  */
 var M5DIAL_SECTIONS = [
@@ -121,8 +122,9 @@ var M5DIAL_SECTIONS = [
   {
     cle: 'distributeurs', titre: '{{Distributeurs}}', icone: 'fas fa-paw', liste: true, ajout: '{{Ajouter un distributeur}}',
     champs: [
-      { c: 'nom', l: '{{Nom affiché}}', t: 'texte', d: '{{Sans accent (police du bouton)}}' },
-      { c: 'doseAction', l: '{{Distribuer (curseur)}}', t: 'action', d: '{{Action curseur qui reçoit le nombre de doses}}' },
+      { c: 'nom', l: '{{Nom affiché}}', t: 'texte', d: '{{Sans accent (police du bouton). Vide avec un planning : nom de l\'équipement planningDistrib}}' },
+      { c: 'planningEquipement', l: '{{Planning (planningDistrib)}}', t: 'planningDistrib', d: '{{Facultatif. Affiche le planning du jour sur le bouton et fait passer la distribution par le plugin planningDistrib (comptée dans « Distribué aujourd\'hui »). Bornes de dose et couleur reprises du planning à chaque envoi de la configuration. Nécessite le firmware 3.2}}' },
+      { c: 'doseAction', l: '{{Distribuer (curseur)}}', t: 'action', d: '{{Action curseur qui reçoit le nombre de doses. Inutile si un planning est choisi}}' },
       { c: 'doseRange.0', l: '{{Dose mini}}', t: 'nombre', d: '{{1 par défaut}}' },
       { c: 'doseRange.1', l: '{{Dose maxi}}', t: 'nombre', d: '{{12 par défaut}}' },
       { c: 'connexionInfo', l: '{{Connexion (info binaire)}}', t: 'info', d: '{{Facultatif : 1 = connecté. Hors ligne, la distribution est bloquée sur le bouton}}' }
@@ -278,8 +280,8 @@ function m5dialHtmlChamp(_champ, _cle, _index, _valeur) {
   var html = '<div class="form-group">'
   html += '<label class="col-sm-4 control-label">' + _champ.l + aide + '</label>'
   html += '<div class="col-sm-7">'
-  if (_champ.t === 'planning') {
-    html += m5dialHtmlPlanning(attrs, _valeur)
+  if (M5DIAL_PLANNINGS[_champ.t] !== undefined) {
+    html += m5dialHtmlPlanning(_champ.t, attrs, _valeur)
   } else if (_champ.t === 'info' || _champ.t === 'action') {
     var id = (_valeur !== undefined && _valeur !== 0) ? _valeur : ''
     html += '<div class="input-group input-group-sm">'
@@ -296,37 +298,43 @@ function m5dialHtmlChamp(_champ, _cle, _index, _valeur) {
   return html
 }
 
-// Equipements planningThermo : charges une fois (null = pas encore charges).
-var m5dialPlanningsThermo = null
-var m5dialPlanningsChargement = false
+// Equipements des plugins de planning (planningThermo, planningDistrib) :
+// charges une fois par plugin (null = pas encore charges).
+var M5DIAL_PLANNINGS = {
+  planning: { action: 'listePlanningsThermo', aucun: '{{Aucun (pas de page Planning)}}', absent: '{{Plugin planningThermo absent ou sans équipement : l\'écran Chauffage reste sans page Planning.}}' },
+  planningDistrib: { action: 'listePlanningsDistrib', aucun: '{{Aucun (écran sans planning)}}', absent: '{{Plugin planningDistrib absent ou sans équipement : l\'écran Distributeur reste sans planning.}}' }
+}
+var m5dialPlannings = { planning: null, planningDistrib: null }
+var m5dialPlanningsChargement = { planning: false, planningDistrib: false }
 
-function m5dialChargerPlannings() {
-  if (m5dialPlanningsThermo !== null || m5dialPlanningsChargement) return
-  m5dialPlanningsChargement = true
+function m5dialChargerPlannings(_type) {
+  if (m5dialPlannings[_type] !== null || m5dialPlanningsChargement[_type]) return
+  m5dialPlanningsChargement[_type] = true
   $.ajax({
     type: 'POST',
     url: 'plugins/m5dial/core/ajax/m5dial.ajax.php',
-    data: { action: 'listePlanningsThermo' },
+    data: { action: M5DIAL_PLANNINGS[_type].action },
     dataType: 'json',
     error: function (request, status, error) {
-      m5dialPlanningsChargement = false
-      m5dialPlanningsThermo = []
+      m5dialPlanningsChargement[_type] = false
+      m5dialPlannings[_type] = []
       handleAjaxError(request, status, error)
     },
     success: function (data) {
-      m5dialPlanningsChargement = false
-      m5dialPlanningsThermo = (data.state == 'ok' && Array.isArray(data.result)) ? data.result : []
+      m5dialPlanningsChargement[_type] = false
+      m5dialPlannings[_type] = (data.state == 'ok' && Array.isArray(data.result)) ? data.result : []
       m5dialAfficher()
     }
   })
 }
 
-function m5dialHtmlPlanning(_attrs, _valeur) {
-  m5dialChargerPlannings()
+function m5dialHtmlPlanning(_type, _attrs, _valeur) {
+  m5dialChargerPlannings(_type)
+  var liste = m5dialPlannings[_type]
   var html = '<select class="form-control input-sm m5dialSaisie" data-type="nombre"' + _attrs + '>'
-  html += '<option value="">{{Aucun (pas de page Planning)}}</option>'
+  html += '<option value="">' + M5DIAL_PLANNINGS[_type].aucun + '</option>'
   var trouve = false
-  ;(m5dialPlanningsThermo || []).forEach(function (p) {
+  ;(liste || []).forEach(function (p) {
     var sel = (String(p.id) === String(_valeur)) ? ' selected' : ''
     if (sel) trouve = true
     html += '<option value="' + p.id + '"' + sel + '>' + $('<span>').text(p.nom).html() + (p.actif ? '' : ' ({{désactivé}})') + '</option>'
@@ -335,8 +343,8 @@ function m5dialHtmlPlanning(_attrs, _valeur) {
     html += '<option value="' + _valeur + '" selected>#' + _valeur + ' ({{introuvable}})</option>'
   }
   html += '</select>'
-  if (m5dialPlanningsThermo !== null && m5dialPlanningsThermo.length === 0) {
-    html += '<span class="help-block">{{Plugin planningThermo absent ou sans équipement : l\'écran Chauffage reste sans page Planning.}}</span>'
+  if (liste !== null && liste.length === 0) {
+    html += '<span class="help-block">' + M5DIAL_PLANNINGS[_type].absent + '</span>'
   }
   return html
 }
