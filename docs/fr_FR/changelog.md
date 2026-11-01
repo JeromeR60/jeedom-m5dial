@@ -3,6 +3,7 @@
 ## 1.12
 
 - Écran Distributeur : avec planningDistrib 0.1.6 ou plus récent (info « Manuel aujourd'hui »), le compteur du bouton n'affiche plus que les doses du planning (« 10 / 19 ») et les distributions manuelles à part (« +1 manuelle »). Le total ne dépasse donc plus les doses prévues. Nécessite le firmware 3.3.
+- Documentation : nouvelle section **§5.4 Page Planning du chauffage**, présentation des plugins de planning facultatifs (planningThermo, planningDistrib), lignes de dépannage, README.
 
 ## 1.11
 

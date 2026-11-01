@@ -7,7 +7,8 @@ Depuis Jeedom, vous pouvez :
 - **superviser** chaque bouton (en ligne, version, signal Wi-Fi, mémoire…) ;
 - **configurer ses écrans** (lumières, volets, chauffage, présence, capteurs, météo, distributeurs, badges RFID) sans recompiler le firmware ;
 - **appairer** un nouveau bouton en quelques secondes, sans mot de passe à saisir ;
-- **mettre à jour le firmware** de tous les boutons, depuis Jeedom ou directement depuis GitHub.
+- **mettre à jour le firmware** de tous les boutons, depuis Jeedom ou directement depuis GitHub ;
+- **afficher et piloter vos plannings** (facultatif) : planning du thermostat avec le plugin [planningThermo](https://github.com/JeromeR60/jeedom-planningThermo) (§5.4) et planning des distributeurs avec le plugin [planningDistrib](https://github.com/JeromeR60/jeedom-planningDistributeur) (§5.3). Ces deux plugins s'installent séparément ; sans eux, les écrans Chauffage et Distributeur fonctionnent normalement.
 
 Toute la communication passe par **MQTT**.
 
@@ -214,7 +215,7 @@ Cochez les écrans à afficher sur le bouton, puis choisissez les commandes Jeed
 | **Lumières** | une ligne par lumière : nom affiché, étage, On / Off / État et, en option, luminosité, température de blanc (mireds) et couleur |
 | **Volets** | une ligne par volet : nom, étage, position (info et curseur), Monter / Descendre / Stop |
 | **Actions groupées** | tout allumer / éteindre, ouvrir / fermer tous les volets ou par étage, heure de fermeture automatique |
-| **Chauffage** | température ambiante, consigne (info, curseur, mini, maxi, pas), modes Confort / Eco / Nuit / Vacances / Off (seuls les modes renseignés apparaissent sur le bouton ; Eco nécessite le firmware 3.0), statut de chauffe, puissance, température extérieure. Le bouton **Importer depuis un thermostat** remplit la section à partir d'un équipement du plugin Thermostat. Champ **Planning** (facultatif, firmware 3.1) : équipement du plugin planningThermo, affiché sur une page supplémentaire de l'écran Chauffage (swipe vers la gauche) avec le planning du jour, les dérogations, l'annulation et la suspension ; les commandes et les couleurs des modes sont reprises automatiquement à chaque envoi de la configuration |
+| **Chauffage** | température ambiante, consigne (info, curseur, mini, maxi, pas), modes Confort / Eco / Nuit / Vacances / Off (seuls les modes renseignés apparaissent sur le bouton ; Eco nécessite le firmware 3.0), statut de chauffe, puissance, température extérieure. Le bouton **Importer depuis un thermostat** remplit la section à partir d'un équipement du plugin Thermostat. Champ **Planning** (facultatif) : équipement du plugin planningThermo, affiché sur une page supplémentaire de l'écran Chauffage (voir §5.4) |
 | **Capteurs** | une ligne par pièce : nom, température, humidité |
 | **Météo** | température, et en option humidité, icône de la condition, min / max, lever et coucher du soleil (voir §5.2) |
 | **Distributeurs** | une ligne par distributeur (croquettes…) : nom, planning planningDistrib (facultatif), commande curseur qui distribue, doses mini / maxi, état de connexion (voir §5.3) |
@@ -231,7 +232,7 @@ Pour annuler, **Revenir à la configuration locale** rend au bouton son `config.
 
 ### Onglet « JSON »
 
-Il contient la configuration générée par l'onglet *Écrans du bouton*. Vous pouvez aussi la coller ou la modifier à la main. Sections reconnues : `presence`, `lumieres`, `volets`, `voletPositionFermee`, `groupes`, `chauffage`, `capteurs`, `badges`. La section `device` est ignorée (le bouton garde son nom et son broker). Taille maximale : **8 Ko**.
+Il contient la configuration générée par l'onglet *Écrans du bouton*. Vous pouvez aussi la coller ou la modifier à la main. Sections reconnues : `presence`, `lumieres`, `volets`, `voletPositionFermee`, `groupes`, `chauffage`, `capteurs`, `meteo`, `distributeurs`, `badges`, `menu`. Les commandes des plannings (`chauffage.planning`, champs `planning…` des distributeurs) sont ajoutées automatiquement par le plugin à l'envoi : le JSON ne garde que l'équipement de planning choisi. La section `device` est ignorée (le bouton garde son nom et son broker). Taille maximale : **8 Ko**.
 
 En cas d'erreur, le bouton garde sa configuration précédente et renseigne la commande *Dernière erreur de configuration*.
 
@@ -316,6 +317,8 @@ Le bouton prend l'heure sur Internet (NTP, heure de Paris) pour choisir l'icône
 
 Pour un distributeur de croquettes (ou tout appareil qui distribue un nombre de doses), firmware 2.8 ou plus. Ajoutez un distributeur par appareil dans la section **Distributeurs** :
 
+> **Planning facultatif** : avec le plugin [planningDistrib](https://github.com/JeromeR60/jeedom-planningDistributeur) (distribution automatique à heures fixes), le bouton affiche aussi le planning du jour. Il faut le firmware 3.2 ou plus (3.3 pour afficher les doses manuelles à part, avec planningDistrib 0.1.6 ou plus).
+
 | Champ | Rôle |
 | --- | --- |
 | Nom affiché | nom sur l'écran (sans accent) ; vide avec un planning : nom de l'équipement planningDistrib |
@@ -327,6 +330,35 @@ Pour un distributeur de croquettes (ou tout appareil qui distribue un nombre de 
 Sur le bouton : **tournez la molette** pour choisir le nombre de doses, puis **appuyez** (bouton ou tap sur l'écran) : « Distribuer 3 ? » s'affiche ; **appuyez une seconde fois dans les 3 secondes** pour distribuer (firmware 3.2 ; sinon la demande est annulée). « Distribue ! » confirme l'envoi. Avec plusieurs distributeurs, **glissez du doigt** pour passer de l'un à l'autre. Appui long ou icône retour : annule la confirmation ou le choix de la dose, puis retour à l'accueil.
 
 Avec un planning planningDistrib, l'écran s'ouvre sur une **vue d'ensemble** : anneau des 24 heures du jour (dose de chaque heure, orange d'autant plus intense que la dose est forte, repère sur l'heure actuelle), doses distribuées / prévues aujourd'hui (avec planningDistrib 0.1.6 ou plus : doses du planning seulement, les distributions manuelles sont affichées à part, « +1 manuelle »), prochaine et dernière distribution. Tournez la molette ou appuyez pour choisir la dose ; sans action pendant 10 secondes, la vue d'ensemble revient.
+
+Si vous modifiez les doses mini / maxi ou la couleur dans planningDistrib, **renvoyez la configuration** au bouton pour qu'il les reprenne. Le planning lui-même (doses heure par heure) se met à jour tout seul.
+
+### 5.4 Page Planning du chauffage (facultatif)
+
+Pour un thermostat dont les modes sont programmés par le plugin [planningThermo](https://github.com/JeromeR60/jeedom-planningThermo). Il faut le **firmware 3.1** ou plus.
+
+**Configuration** : dans la section **Chauffage**, choisissez l'équipement planningThermo dans le champ **Planning (page supplémentaire)**, sauvegardez, puis envoyez la configuration. Le bouton **Importer depuis un thermostat** le choisit pour vous si un seul planning pilote ce thermostat. Le plugin reprend tout seul les commandes du planning, l'info de verrouillage du thermostat et les modes avec leurs couleurs. Si vous modifiez les modes ou les couleurs dans planningThermo, renvoyez la configuration.
+
+Sans planningThermo, ou avec le champ sur *Aucun*, l'écran Chauffage reste tel quel.
+
+**Sur le bouton** : depuis l'écran Chauffage, **glissez vers la gauche** pour ouvrir la page Planning (deux points en bas indiquent la page) ; glissez vers la droite pour revenir au thermostat.
+
+- L'**anneau** montre le planning du jour en 48 créneaux de 30 minutes, aux couleurs des modes, 00:00 en haut. Les créneaux passés sont estompés, un repère blanc marque l'heure actuelle et une dérogation en cours est soulignée.
+- Au **centre** : l'état (*Planning*, *Dérogation* ou *Planning suspendu*), le mode en cours dans sa couleur, son heure de fin (« jusqu'à 23:00 ») et le mode suivant.
+
+**Menu** : tournez la molette ou appuyez (ou tapez sur l'écran) :
+
+| Choix | Effet |
+| --- | --- |
+| un mode (Confort, Eco, Nuit…) | ouvre le choix de la durée : jusqu'au prochain changement, 30 min, 1 h, 2 h ou 3 h ; l'anneau montre un aperçu, l'appui envoie la **dérogation** |
+| Annuler dérog. | proposé pendant une dérogation : retour au planning |
+| Suspendre / Reprendre | arrête ou relance l'envoi des ordres par le planning |
+
+L'icône retour ou un glissement vers la droite reviennent à l'étape précédente ; l'appui long ferme le menu ; sans action, le menu se ferme au bout de 20 secondes.
+
+Quand le thermostat est **verrouillé** (par exemple par un scénario vacances), la page affiche *Thermostat verrouillé – Vacances – Planning en pause* et ne propose aucune action.
+
+Les icônes de mode de l'écran Chauffage envoient toujours le mode directement au thermostat : ce choix reste actif jusqu'au prochain changement du planning.
 
 ---
 
@@ -416,6 +448,8 @@ Remplacez les chemins par les vôtres (sélecteur de commandes). Le déclencheur
 | « La configuration est vide » | Sauvegarder l'équipement avant d'envoyer la configuration. |
 | Mise à jour en échec | Vérifier que le bouton est en ligne et que Jeedom peut joindre GitHub (sinon déposer le firmware à la main, §6.1), puis relancer. Le détail est dans le log `m5dial`. |
 | Le bouton répond « déjà à jour » | Il a déjà la version proposée : rien à faire. |
+| Pas de page Planning, ou distributeur sans anneau | Vérifier le firmware (3.1 pour le chauffage, 3.2 pour les distributeurs), que le plugin de planning est installé et l'équipement **activé**, puis renvoyer la configuration. Un équipement de planning introuvable est signalé dans le log `m5dial`. |
+| Page Planning sur « En attente », mode « ? », compteur « - / - » | Le bouton ne reçoit pas les infos du planning : vérifier dans MQTT Manager que les événements de **toutes** les commandes sont publiés (les infos des plugins de planning sont des commandes masquées) ; avec MQTT Explorer, vérifier `jeedom/cmd/event/<id>` pour ces commandes. |
 | Surveiller la mémoire du bouton | Afficher sur un même graphique **Mémoire libre**, **Mémoire mini**, **Plus gros bloc libre** et **Durée de fonctionnement**. Des courbes plates entre deux redémarrages sont normales ; un pic de mémoire libre correspond en général à un redémarrage (la durée repart à 0). À surveiller : *Mémoire mini* qui baisse jour après jour, ou *Plus gros bloc libre* qui descend sous ~20 Ko. |
 | Les accents s'affichent mal | Écrire les noms sans accents. |
 

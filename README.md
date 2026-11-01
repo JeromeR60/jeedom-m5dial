@@ -8,6 +8,7 @@ Plugin Jeedom et firmware qui transforment un **M5Stack Dial** (écran rond, mol
 
 - Lumières (on/off, intensité, blanc, couleur), volets, chauffage, modes de présence
 - Badges RFID, capteurs (température, humidité), météo avec prévisions sur deux jours, distributeurs de croquettes
+- Plannings facultatifs, affichés et pilotés depuis le bouton : thermostat avec [planningThermo](https://github.com/JeromeR60/jeedom-planningThermo) (dérogations, suspension), distributeurs avec [planningDistrib](https://github.com/JeromeR60/jeedom-planningDistributeur) (planning du jour, doses distribuées / prévues)
 - Écrans configurés depuis Jeedom, sans recompiler le firmware
 - Appairage d'un nouveau bouton en quelques secondes, sans mot de passe à saisir
 - Mises à jour du firmware par Wi-Fi depuis Jeedom (notification des nouvelles versions)
