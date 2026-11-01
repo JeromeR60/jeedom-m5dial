@@ -326,7 +326,7 @@ Pour un distributeur de croquettes (ou tout appareil qui distribue un nombre de 
 
 Sur le bouton : **tournez la molette** pour choisir le nombre de doses, puis **appuyez** (bouton ou tap sur l'écran) : « Distribuer 3 ? » s'affiche ; **appuyez une seconde fois dans les 3 secondes** pour distribuer (firmware 3.2 ; sinon la demande est annulée). « Distribue ! » confirme l'envoi. Avec plusieurs distributeurs, **glissez du doigt** pour passer de l'un à l'autre. Appui long ou icône retour : annule la confirmation ou le choix de la dose, puis retour à l'accueil.
 
-Avec un planning planningDistrib, l'écran s'ouvre sur une **vue d'ensemble** : anneau des 24 heures du jour (dose de chaque heure, orange d'autant plus intense que la dose est forte, repère sur l'heure actuelle), doses distribuées / prévues aujourd'hui, prochaine et dernière distribution. Tournez la molette ou appuyez pour choisir la dose ; sans action pendant 10 secondes, la vue d'ensemble revient.
+Avec un planning planningDistrib, l'écran s'ouvre sur une **vue d'ensemble** : anneau des 24 heures du jour (dose de chaque heure, orange d'autant plus intense que la dose est forte, repère sur l'heure actuelle), doses distribuées / prévues aujourd'hui (avec planningDistrib 0.1.6 ou plus : doses du planning seulement, les distributions manuelles sont affichées à part, « +1 manuelle »), prochaine et dernière distribution. Tournez la molette ou appuyez pour choisir la dose ; sans action pendant 10 secondes, la vue d'ensemble revient.
 
 ---
 

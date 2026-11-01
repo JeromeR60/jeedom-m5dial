@@ -729,7 +729,7 @@ class m5dial extends eqLogic {
 		if (!isset($_config['distributeurs']) || !is_array($_config['distributeurs'])) {
 			return $_config;
 		}
-		$cles = array('planningInfo', 'prevuInfo', 'distribueInfo', 'prochaineInfo', 'derniereDoseInfo', 'derniereHeureInfo', 'distribuerAction', 'couleur');
+		$cles = array('planningInfo', 'prevuInfo', 'distribueInfo', 'manuelInfo', 'prochaineInfo', 'derniereDoseInfo', 'derniereHeureInfo', 'distribuerAction', 'couleur');
 		foreach ($_config['distributeurs'] as $i => $distrib) {
 			if (!is_array($distrib)) continue;
 			foreach ($cles as $cle) {
@@ -743,6 +743,7 @@ class m5dial extends eqLogic {
 				} else {
 					$commandes = array(
 						'planning' => 'planningInfo', 'todayPlanned' => 'prevuInfo', 'todayDone' => 'distribueInfo',
+						'todayManual' => 'manuelInfo', // planningDistrib >= 0.1.6 : distributions manuelles du jour
 						'next' => 'prochaineInfo', 'lastDose' => 'derniereDoseInfo', 'lastTime' => 'derniereHeureInfo',
 						'distribute' => 'distribuerAction',
 					);
