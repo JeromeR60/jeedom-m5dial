@@ -214,7 +214,7 @@ Cochez les écrans à afficher sur le bouton, puis choisissez les commandes Jeed
 | **Lumières** | une ligne par lumière : nom affiché, étage, On / Off / État et, en option, luminosité, température de blanc (mireds) et couleur |
 | **Volets** | une ligne par volet : nom, étage, position (info et curseur), Monter / Descendre / Stop |
 | **Actions groupées** | tout allumer / éteindre, ouvrir / fermer tous les volets ou par étage, heure de fermeture automatique |
-| **Chauffage** | température ambiante, consigne (info, curseur, mini, maxi, pas), modes Confort / Nuit / Vacances / Off, statut de chauffe, puissance, température extérieure |
+| **Chauffage** | température ambiante, consigne (info, curseur, mini, maxi, pas), modes Confort / Eco / Nuit / Vacances / Off (seuls les modes renseignés apparaissent sur le bouton ; Eco nécessite le firmware 3.0), statut de chauffe, puissance, température extérieure. Le bouton **Importer depuis un thermostat** remplit la section à partir d'un équipement du plugin Thermostat |
 | **Capteurs** | une ligne par pièce : nom, température, humidité |
 | **Météo** | température, et en option humidité, icône de la condition, min / max, lever et coucher du soleil (voir §5.2) |
 | **Distributeurs** | une ligne par distributeur (croquettes…) : nom, commande curseur qui distribue, doses mini / maxi, état de connexion (voir §5.3) |

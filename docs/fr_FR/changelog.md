@@ -1,5 +1,10 @@
 # Changelog plugin M5Dial
 
+## 1.9
+
+- Écran Chauffage : nouveau **mode Eco** (champ « Mode Eco » dans la section Chauffage). Sur le bouton, seuls les modes renseignés sont affichés et proposés à l'appui : un thermostat sans Eco (ou sans Vacances) n'a plus d'icône inutile. Nécessite le firmware 3.0.
+- Section Chauffage : bouton **Importer depuis un thermostat**. Il remplit automatiquement les commandes à partir d'un équipement du plugin Thermostat (température, consigne, mode, statut, puissance, température extérieure, consigne mini / maxi et les modes Confort, Eco, Nuit, Vacances / Hors-gel, Off). Les champs non trouvés sont laissés tels quels et signalés.
+
 ## 1.8
 
 - « Mettre à jour le firmware » récupère d'abord la dernière version publiée sur GitHub si elle est plus récente que celle déposée dans Jeedom : plus besoin de cliquer avant sur « Récupérer la dernière version sur GitHub ». La commande peut donc être placée telle quelle dans un virtuel ou un scénario. Un firmware déposé à la main plus récent (mode avancé) est conservé ; si GitHub est injoignable, le firmware déjà déposé est envoyé.

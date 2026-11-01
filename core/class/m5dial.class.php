@@ -621,6 +621,68 @@ class m5dial extends eqLogic {
 		}
 	}
 
+	// Editeur, section Chauffage, bouton « Importer depuis un thermostat » :
+	// retrouve les commandes d'un equipement du plugin Thermostat officiel par
+	// leur logicalId, et ses modes (commandes « modeAction ») par leur nom.
+	// Renvoie les valeurs par chemin de l'editeur (ex. "modes.eco" => 123).
+	public static function importerThermostat($_id) {
+		$thermostat = eqLogic::byId(intval($_id));
+		if (!is_object($thermostat)) {
+			throw new Exception(__('Équipement introuvable', __FILE__) . ' : ' . $_id);
+		}
+		if ($thermostat->getEqType_name() != 'thermostat') {
+			throw new Exception(__('Choisissez un équipement du plugin Thermostat', __FILE__) . ' (' . $thermostat->getHumanName() . ')');
+		}
+		$champs = array('nomAffiche' => $thermostat->getName());
+		$parLogicalId = array(
+			'temperature' => 'temperatureAmbianteInfo',
+			'order' => 'consigneInfo',
+			'thermostat' => 'consigneAction',
+			'mode' => 'modeInfo',
+			'status' => 'statutInfo',
+			'power' => 'puissanceInfo',
+			'temperature_outdoor' => 'temperatureExterieureInfo',
+			'off' => 'modes.off',
+		);
+		foreach ($parLogicalId as $logicalId => $chemin) {
+			$cmd = $thermostat->getCmd(null, $logicalId);
+			if (is_object($cmd)) {
+				$champs[$chemin] = intval($cmd->getId());
+			}
+		}
+		foreach (array('order_min' => 'consigneMin', 'order_max' => 'consigneMax') as $cle => $chemin) {
+			$valeur = $thermostat->getConfiguration($cle, '');
+			if (is_numeric($valeur)) {
+				$champs[$chemin] = floatval($valeur);
+			}
+		}
+		// Modes du thermostat : rapproches par leur nom (sans accents ni casse).
+		$synonymes = array(
+			'confort' => 'confort', 'comfort' => 'confort',
+			'eco' => 'eco', 'economie' => 'eco', 'economique' => 'eco',
+			'nuit' => 'nuit', 'night' => 'nuit',
+			'vacances' => 'vacances', 'hors gel' => 'vacances', 'hors-gel' => 'vacances', 'horsgel' => 'vacances', 'absence' => 'vacances', 'absent' => 'vacances',
+		);
+		$autresModes = array();
+		foreach ($thermostat->getCmd('action', 'modeAction', null, true) as $cmd) {
+			// Accents retires sans iconv (son resultat depend de la locale du serveur).
+			$nom = strtolower(trim(preg_replace('/&([a-z])[a-z0-9]+;/i', '$1', htmlentities($cmd->getName(), ENT_QUOTES, 'UTF-8'))));
+			if (isset($synonymes[$nom]) && !isset($champs['modes.' . $synonymes[$nom]])) {
+				$champs['modes.' . $synonymes[$nom]] = intval($cmd->getId());
+			} else {
+				$autresModes[] = $cmd->getName();
+			}
+		}
+		$attendus = array('temperatureAmbianteInfo', 'consigneInfo', 'consigneAction', 'modeInfo', 'statutInfo', 'modes.confort', 'modes.eco', 'modes.nuit', 'modes.vacances', 'modes.off');
+		$manquants = array();
+		foreach ($attendus as $chemin) {
+			if (!isset($champs[$chemin])) {
+				$manquants[] = $chemin;
+			}
+		}
+		return array('champs' => $champs, 'manquants' => $manquants, 'autresModes' => $autresModes);
+	}
+
 	public static function cronDaily() {
 		self::verifierMisesAJour();
 	}

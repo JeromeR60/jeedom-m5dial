@@ -70,7 +70,7 @@ var M5DIAL_SECTIONS = [
     ]
   },
   {
-    cle: 'chauffage', titre: '{{Chauffage}}', icone: 'fas fa-thermometer-half', liste: false,
+    cle: 'chauffage', titre: '{{Chauffage}}', icone: 'fas fa-thermometer-half', liste: false, importThermostat: true,
     champs: [
       { c: 'nomAffiche', l: '{{Nom affiché}}', t: 'texte' },
       { c: 'temperatureAmbianteInfo', l: '{{Température ambiante}}', t: 'info' },
@@ -81,6 +81,7 @@ var M5DIAL_SECTIONS = [
       { c: 'consignePas', l: '{{Pas de réglage}}', t: 'nombre', d: '{{0.5 en général}}' },
       { c: 'modeInfo', l: '{{Mode actuel (info)}}', t: 'info' },
       { c: 'modes.confort', l: '{{Mode Confort}}', t: 'action' },
+      { c: 'modes.eco', l: '{{Mode Eco}}', t: 'action', d: '{{Facultatif. Nécessite le firmware 3.0. Un mode laissé vide n\'est pas affiché sur le bouton}}' },
       { c: 'modes.nuit', l: '{{Mode Nuit}}', t: 'action' },
       { c: 'modes.vacances', l: '{{Mode Vacances}}', t: 'action' },
       { c: 'modes.off', l: '{{Mode Off}}', t: 'action' },
@@ -311,6 +312,9 @@ function m5dialAfficher() {
     if (s.liste && active) {
       html += ' <a class="btn btn-xs btn-success pull-right m5dialAjouter" data-section="' + s.cle + '"><i class="fas fa-plus-circle"></i> ' + s.ajout + '</a>'
     }
+    if (s.importThermostat && active) {
+      html += ' <a class="btn btn-xs btn-default pull-right m5dialImporterThermostat" title="{{Remplit la section avec les commandes d\'un équipement du plugin Thermostat}}"><i class="fas fa-file-import"></i> {{Importer depuis un thermostat}}</a>'
+    }
     html += '</div>'
     if (active) {
       html += '<div class="panel-body"><form class="form-horizontal">'
@@ -468,6 +472,46 @@ $('#div_m5dialEditeur').off('click', '.m5dialMenuDeplacer').on('click', '.m5dial
   m5dialConfig.menu = ordre
   m5dialEcrireJson()
   m5dialAfficher()
+})
+
+// Section Chauffage : remplit les champs a partir d'un equipement du plugin
+// Thermostat (commandes retrouvees par le plugin, modes par leur nom).
+$('#div_m5dialEditeur').off('click', '.m5dialImporterThermostat').on('click', '.m5dialImporterThermostat', function () {
+  jeedom.eqLogic.getSelectModal({ eqLogic: { eqType_name: 'thermostat' } }, function (result) {
+    if (!result || !result.id) return
+    $.ajax({
+      type: 'POST',
+      url: 'plugins/m5dial/core/ajax/m5dial.ajax.php',
+      data: { action: 'importerThermostat', id: result.id },
+      dataType: 'json',
+      error: function (request, status, error) { handleAjaxError(request, status, error) },
+      success: function (data) {
+        if (data.state != 'ok') {
+          $('#div_alert').showAlert({ message: data.result, level: 'danger' })
+          return
+        }
+        if (m5dialConfig.chauffage === undefined || typeof m5dialConfig.chauffage !== 'object') m5dialConfig.chauffage = {}
+        Object.keys(data.result.champs).forEach(function (chemin) {
+          // Un nom affiché déjà saisi est conservé.
+          if (chemin === 'nomAffiche' && m5dialConfig.chauffage.nomAffiche) return
+          m5dialEcrire(m5dialConfig.chauffage, chemin, data.result.champs[chemin])
+        })
+        m5dialEcrireJson()
+        m5dialAfficher()
+        var message = '{{Commandes importées depuis}} ' + result.human + '. {{Pensez à sauvegarder l\'équipement.}}'
+        var niveau = 'success'
+        if (data.result.manquants.length > 0) {
+          message += ' {{Non trouvé (champ laissé tel quel)}} : ' + data.result.manquants.join(', ') + '.'
+          niveau = 'warning'
+        }
+        if (data.result.autresModes.length > 0) {
+          message += ' {{Modes du thermostat non repris}} : ' + data.result.autresModes.join(', ') + '.'
+          niveau = 'warning'
+        }
+        $('#div_alert').showAlert({ message: message, level: niveau })
+      }
+    })
+  })
 })
 
 // Retour sur l'onglet Ecrans apres une modification manuelle du JSON.
